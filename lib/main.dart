@@ -1,16 +1,19 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wapexp/features/auth/presentation/pages/auth_wrapper.dart';
 
 import 'package:wapexp/injection_container.dart';
 
 Future<void> main() async {
-  // Yeh ensure karta hai ke Flutter bindings initialize ho chuki hain.
+  // Ensure Flutter is ready before doing anything else.
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Firebase ko initialize karna (firebase_options.dart file se)
+  // Initialize Firebase using the generated options file.
   await Firebase.initializeApp();
 
-  // Hamara manual Dependency Injection container initialize karna
+  // Set up our manual dependency injection container.
   await setupDependencies();
 
   runApp(const MyApp());
@@ -21,22 +24,27 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Wapexp',
-      debugShowCheckedModeBanner: false, // Debug banner ko hatana
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
-        useMaterial3: true,
-        scaffoldBackgroundColor: Colors.white,
-      ),
-      // Hum yahan temporary tor par ek screen laga rahe hain
-      home: const Scaffold(
-        body: Center(
-          child: Text(
-            'Setup Complete. Ready for UI!',
-            style: TextStyle(fontSize: 20),
+    // Provide the AuthBloc to the entire widget tree below it.
+    return BlocProvider<AuthBloc>(
+      create: (context) => getIt<AuthBloc>(),
+      child: MaterialApp(
+        title: 'Wapexp Admin',
+        debugShowCheckedModeBanner: false, // Hides the debug banner
+        theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
+          useMaterial3: true,
+          scaffoldBackgroundColor: Colors.white,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.green,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(foregroundColor: Colors.green),
           ),
         ),
+        // The AuthWrapper will decide which screen to show based on login state.
+        home: const AuthWrapper(),
       ),
     );
   }

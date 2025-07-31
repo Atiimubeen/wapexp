@@ -5,36 +5,51 @@ import 'package:get_it/get_it.dart';
 import 'package:wapexp/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wapexp/features/auth/data/repositories/auth_repository_impl.dart';
 import 'package:wapexp/features/auth/domain/repositories/auth_repository.dart';
+import 'package:wapexp/features/auth/domain/usecases/get_user_stream_usecase.dart';
+import 'package:wapexp/features/auth/domain/usecases/login_usecase.dart';
+import 'package:wapexp/features/auth/domain/usecases/logout_usecase.dart';
+import 'package:wapexp/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 
-// get_it ka instance
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
-  // Is function mein hum apni saari classes ko manually register karenge.
+  // ================= BLoCs =================
+  // AuthBloc ko register karna. Yeh har baar nayi instance banayega (factory).
+  getIt.registerFactory(
+    () => AuthBloc(
+      signUpUseCase: getIt(),
+      logInUseCase: getIt(),
+      logOutUseCase: getIt(),
+      getUserStreamUseCase: getIt(),
+    ),
+  );
 
-  // ================= EXTERNAL (3rd Party) =================
-  // Firebase ki services ko register karna
+  // ================= USE CASES =================
+  // Tamam use cases ko register karna.
+  getIt.registerLazySingleton(() => SignUpUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => LogInUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => LogOutUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetUserStreamUseCase(repository: getIt()));
+
+  // ================= REPOSITORIES =================
+  getIt.registerLazySingleton<AuthRepository>(
+    () => AuthRepositoryImpl(remoteDataSource: getIt()),
+  );
+
+  // ================= DATA SOURCES =================
+  getIt.registerLazySingleton<AuthRemoteDataSource>(
+    () => AuthRemoteDataSourceImpl(
+      firebaseAuth: getIt(),
+      firestore: getIt(),
+      storage: getIt(),
+    ),
+  );
+
+  // ================= EXTERNAL =================
   getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
   getIt.registerLazySingleton<FirebaseFirestore>(
     () => FirebaseFirestore.instance,
   );
   getIt.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
-
-  // ================= DATA SOURCES =================
-  // AuthRemoteDataSource ko register karna
-  getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(
-      firebaseAuth: getIt<FirebaseAuth>(),
-      firestore: getIt<FirebaseFirestore>(),
-      storage: getIt<FirebaseStorage>(),
-    ),
-  );
-
-  // ================= REPOSITORIES =================
-  // AuthRepository ko register karna
-  getIt.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImpl(remoteDataSource: getIt<AuthRemoteDataSource>()),
-  );
-
-  // Jab hum BLoC/Use Cases banayenge, to unko bhi yahin register karenge.
 }
