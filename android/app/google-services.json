@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "678292090135",
+    "project_id": "weprex-3a2fd",
+    "storage_bucket": "weprex-3a2fd.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:678292090135:android:376896d61aaca25a435b52",
+        "android_client_info": {
+          "package_name": "com.example.wapexp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9jZL4npYzfl_158x5jzaJ3jr5Me9rE70"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
