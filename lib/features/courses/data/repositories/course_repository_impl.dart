@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:wapexp/core/error/failure.dart';
 import 'package:wapexp/features/courses/data/datasources/course_remote_data_source.dart';
+import 'package:wapexp/features/courses/domain/entities/course_entity.dart';
 import 'package:wapexp/features/courses/domain/repositories/course_repository.dart';
 
 class CourseRepositoryImpl implements CourseRepository {
@@ -38,6 +39,40 @@ class CourseRepositoryImpl implements CourseRepository {
       return Left(
         ServerFailure(message: 'Failed to add course. Please try again.'),
       );
+    }
+  }
+
+  @override
+  Stream<Either<Failure, List<CourseEntity>>> getCourses() async* {
+    try {
+      await for (final courses in remoteDataSource.getCourses()) {
+        yield Right(courses);
+      }
+    } catch (e) {
+      yield Left(ServerFailure(message: 'Failed to fetch courses.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteCourse(
+    String courseId,
+    String imageUrl,
+  ) async {
+    try {
+      await remoteDataSource.deleteCourse(courseId, imageUrl);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(message: 'Failed to delete course.'));
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> updateCourse(CourseEntity course) async {
+    try {
+      await remoteDataSource.updateCourse(course);
+      return const Right(null);
+    } catch (e) {
+      return Left(ServerFailure(message: 'Failed to update course.'));
     }
   }
 }

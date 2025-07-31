@@ -24,27 +24,40 @@ class MyApp extends StatelessWidget {
         title: 'Wapexp Admin',
         debugShowCheckedModeBanner: false,
 
-        // ================= LIGHT THEME =================
+        // ================= LIGHT THEME (IMPROVED) =================
         theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.green,
             primary: Colors.green.shade700,
-            background: Colors.white,
-            onBackground: Colors.black87, // Text color on background
+            background: const Color(
+              0xFFF5F5F5,
+            ), // Thora sa off-white background
+            onBackground: Colors.black87,
+            surface: Colors.white, // Cards ka color
+            onSurface: Colors.black87, // Cards par text ka color
           ),
-          scaffoldBackgroundColor: Colors.white,
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.green.shade700,
-            foregroundColor: Colors.white,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(foregroundColor: Colors.green.shade800),
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+          // Text fields ke liye default theme
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+            ), // Hint text ka color
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
           ),
         ),
 
-        // ================= DARK THEME =================
+        // ================= DARK THEME (IMPROVED) =================
         darkTheme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.dark,
@@ -53,21 +66,30 @@ class MyApp extends StatelessWidget {
             brightness: Brightness.dark,
             primary: Colors.green.shade400,
             background: const Color(0xFF121212),
-            onBackground: Colors.white70, // Text color on background
+            onBackground: Colors.white70,
+            surface: const Color(0xFF1E1E1E), // Cards ka color
+            onSurface: Colors.white70, // Cards par text ka color
           ),
           scaffoldBackgroundColor: const Color(0xFF121212),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.green.shade800,
-            foregroundColor: Colors.white,
-          ),
-          textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(foregroundColor: Colors.green.shade400),
+          // Text fields ke liye default theme (dark)
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.grey.shade800,
+            hintStyle: TextStyle(
+              color: Colors.grey.shade500,
+            ), // Hint text ka color
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade700),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade700),
+            ),
           ),
         ),
 
-        // Yeh device ki setting ke hisab se theme select karega
-        themeMode: ThemeMode.system,
-
+        themeMode: ThemeMode.dark,
         home: const AuthWrapper(),
       ),
     );

@@ -18,7 +18,20 @@ import 'package:wapexp/features/courses/data/datasources/course_remote_data_sour
 import 'package:wapexp/features/courses/data/repositories/course_repository_impl.dart';
 import 'package:wapexp/features/courses/domain/repositories/course_repository.dart';
 import 'package:wapexp/features/courses/domain/usecases/add_course_usecase.dart';
+import 'package:wapexp/features/courses/domain/usecases/delete_course_usecase.dart';
+import 'package:wapexp/features/courses/domain/usecases/get_courses_usecase.dart';
+import 'package:wapexp/features/courses/domain/usecases/update_course_usecase.dart';
 import 'package:wapexp/features/courses/presentation/bloc/course_bloc.dart';
+
+// Achievements Imports
+import 'package:wapexp/features/achievements/data/datasources/achievement_remote_data_source.dart';
+import 'package:wapexp/features/achievements/data/repositories/achievement_repository_impl.dart';
+import 'package:wapexp/features/achievements/domain/repositories/achievement_repository.dart';
+import 'package:wapexp/features/achievements/domain/usecases/add_achievement_usecase.dart';
+import 'package:wapexp/features/achievements/domain/usecases/delete_achievement_usecase.dart';
+import 'package:wapexp/features/achievements/domain/usecases/get_achievements_usecase.dart';
+import 'package:wapexp/features/achievements/domain/usecases/update_achievement_usecase.dart';
+import 'package:wapexp/features/achievements/presentation/bloc/achievement_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -32,7 +45,22 @@ Future<void> setupDependencies() async {
       getUserStreamUseCase: getIt(),
     ),
   );
-  getIt.registerFactory(() => CourseBloc(addCourseUseCase: getIt()));
+  getIt.registerFactory(
+    () => CourseBloc(
+      addCourseUseCase: getIt(),
+      getCoursesUseCase: getIt(),
+      deleteCourseUseCase: getIt(),
+      updateCourseUseCase: getIt(),
+    ),
+  );
+  getIt.registerFactory(
+    () => AchievementBloc(
+      addAchievementUseCase: getIt(),
+      getAchievementsUseCase: getIt(),
+      deleteAchievementUseCase: getIt(),
+      updateAchievementUseCase: getIt(),
+    ),
+  );
 
   // ================= USE CASES =================
   // Auth
@@ -42,6 +70,20 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(() => GetUserStreamUseCase(repository: getIt()));
   // Courses
   getIt.registerLazySingleton(() => AddCourseUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetCoursesUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => DeleteCourseUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateCourseUseCase(repository: getIt()));
+  // Achievements
+  getIt.registerLazySingleton(() => AddAchievementUseCase(repository: getIt()));
+  getIt.registerLazySingleton(
+    () => GetAchievementsUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => DeleteAchievementUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => UpdateAchievementUseCase(repository: getIt()),
+  );
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepository>(
@@ -49,6 +91,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<CourseRepository>(
     () => CourseRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<AchievementRepository>(
+    () => AchievementRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // ================= DATA SOURCES =================
@@ -61,6 +106,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<CourseRemoteDataSource>(
     () => CourseRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
+  );
+  getIt.registerLazySingleton<AchievementRemoteDataSource>(
+    () => AchievementRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
   );
 
   // ================= EXTERNAL =================

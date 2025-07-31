@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wapexp/features/achievements/presentation/pages/manage_achievements_page.dart';
 import 'package:wapexp/features/auth/domain/entities/user_entity.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
@@ -17,7 +18,10 @@ class AdminHomePage extends StatelessWidget {
       case 'Manage Courses':
         page = const ManageCoursesPage();
         break;
-      // TODO: Add cases for other pages
+      // **NAYA CASE ADD HUA HAI**
+      case 'Manage Achievements':
+        page = const ManageAchievementsPage();
+        break;
       default:
         ScaffoldMessenger.of(
           context,

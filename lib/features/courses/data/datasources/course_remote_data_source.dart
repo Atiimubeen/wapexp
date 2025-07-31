@@ -1,7 +1,9 @@
 import 'dart:io';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:wapexp/features/courses/data/models/course_model.dart';
 //import 'package:wapexp/features/courses/data/models/course_model.dart';
+import 'package:wapexp/features/courses/domain/entities/course_entity.dart';
 
 abstract class CourseRemoteDataSource {
   Future<void> addCourse({
@@ -15,6 +17,9 @@ abstract class CourseRemoteDataSource {
     DateTime? endDate,
     DateTime? offerEndDate,
   });
+  Stream<List<CourseModel>> getCourses();
+  Future<void> updateCourse(CourseEntity course);
+  Future<void> deleteCourse(String courseId, String imageUrl);
 }
 
 class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
@@ -26,6 +31,47 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
     required FirebaseStorage storage,
   }) : _firestore = firestore,
        _storage = storage;
+  @override
+  Stream<List<CourseModel>> getCourses() {
+    return _firestore
+        .collection('courses')
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map((snapshot) {
+          return snapshot.docs
+              .map((doc) => CourseModel.fromFirestore(doc))
+              .toList();
+        });
+  }
+
+  @override
+  Future<void> deleteCourse(String courseId, String imageUrl) async {
+    // 1. Firestore se document delete karna
+    await _firestore.collection('courses').doc(courseId).delete();
+    // 2. Storage se image delete karna
+    await _storage.refFromURL(imageUrl).delete();
+  }
+
+  @override
+  Future<void> updateCourse(CourseEntity course) async {
+    final courseModel = CourseModel(
+      id: course.id,
+      name: course.name,
+      description: course.description,
+      price: course.price,
+      discountedPrice: course.discountedPrice,
+      duration: course.duration,
+      imageUrl: course.imageUrl,
+      startDate: course.startDate,
+      endDate: course.endDate,
+      offerEndDate: course.offerEndDate,
+    );
+
+    await _firestore
+        .collection('courses')
+        .doc(course.id)
+        .update(courseModel.toFirestore());
+  }
 
   @override
   Future<void> addCourse({
