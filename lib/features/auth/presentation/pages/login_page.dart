@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
-import 'package:wapexp/features/auth/presentation/bloc/auth_state.dart';
+import 'package:wapexp/features/auth/presentation/bloc/auth_state.dart'; // <-- State import karein
+import 'package:wapexp/features/auth/presentation/pages/admin_home_page.dart'; // <-- Home Page import karein
 import 'package:wapexp/features/auth/presentation/pages/signup_page.dart';
 import 'package:wapexp/features/auth/presentation/widgets/custom_button.dart';
 import 'package:wapexp/features/auth/presentation/widgets/custom_text_field.dart';
@@ -56,7 +57,15 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 30),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    if (state is AuthFailure) {
+                    // <-- YAHAN BHI WOHI FIX
+                    if (state is Authenticated) {
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (_) => AdminHomePage(user: state.user),
+                        ),
+                        (route) => false,
+                      );
+                    } else if (state is AuthFailure) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),

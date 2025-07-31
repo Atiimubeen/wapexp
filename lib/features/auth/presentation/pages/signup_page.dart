@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
-import 'package:wapexp/features/auth/presentation/bloc/auth_state.dart';
+import 'package:wapexp/features/auth/presentation/bloc/auth_state.dart'; // <-- State import karein
+import 'package:wapexp/features/auth/presentation/pages/admin_home_page.dart'; // <-- Home Page import karein
 import 'package:wapexp/features/auth/presentation/pages/login_page.dart';
 import 'package:wapexp/features/auth/presentation/widgets/custom_button.dart';
 import 'package:wapexp/features/auth/presentation/widgets/custom_text_field.dart';
@@ -94,7 +95,16 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 30),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    if (state is AuthFailure) {
+                    // <-- YEH HAI ASAL FIX
+                    if (state is Authenticated) {
+                      // Jaise hi user authenticate ho, Admin Home Page par jao aur purani sab screens hata do.
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(
+                          builder: (_) => AdminHomePage(user: state.user),
+                        ),
+                        (route) => false,
+                      );
+                    } else if (state is AuthFailure) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),

@@ -16,14 +16,20 @@ class CustomTextField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Theme se colors hasil karna
+    final colors = Theme.of(context).colorScheme;
+
     return TextField(
       controller: controller,
       obscureText: isPassword,
       decoration: InputDecoration(
-        prefixIcon: Icon(icon, color: Colors.grey),
+        prefixIcon: Icon(icon, color: colors.onSurface.withOpacity(0.5)),
         hintText: hintText,
         filled: true,
-        fillColor: Colors.grey[100],
+        // Ternary operator istemal karna taake light/dark mode ke liye alag color ho
+        fillColor: Theme.of(context).brightness == Brightness.light
+            ? Colors.grey[100]
+            : Colors.grey[850],
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,
@@ -34,7 +40,7 @@ class CustomTextField extends StatelessWidget {
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
-          borderSide: BorderSide(color: Theme.of(context).primaryColor),
+          borderSide: BorderSide(color: colors.primary),
         ),
       ),
     );

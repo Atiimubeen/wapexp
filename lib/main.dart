@@ -7,15 +7,9 @@ import 'package:wapexp/features/auth/presentation/pages/auth_wrapper.dart';
 import 'package:wapexp/injection_container.dart';
 
 Future<void> main() async {
-  // Ensure Flutter is ready before doing anything else.
   WidgetsFlutterBinding.ensureInitialized();
-
-  // Initialize Firebase using the generated options file.
   await Firebase.initializeApp();
-
-  // Set up our manual dependency injection container.
   await setupDependencies();
-
   runApp(const MyApp());
 }
 
@@ -24,26 +18,56 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Provide the AuthBloc to the entire widget tree below it.
     return BlocProvider<AuthBloc>(
       create: (context) => getIt<AuthBloc>(),
       child: MaterialApp(
         title: 'Wapexp Admin',
-        debugShowCheckedModeBanner: false, // Hides the debug banner
+        debugShowCheckedModeBanner: false,
+
+        // ================= LIGHT THEME =================
         theme: ThemeData(
-          colorScheme: ColorScheme.fromSeed(seedColor: Colors.green),
           useMaterial3: true,
+          brightness: Brightness.light,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green,
+            primary: Colors.green.shade700,
+            background: Colors.white,
+            onBackground: Colors.black87, // Text color on background
+          ),
           scaffoldBackgroundColor: Colors.white,
-          appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.green,
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.green.shade700,
             foregroundColor: Colors.white,
-            elevation: 0,
           ),
           textButtonTheme: TextButtonThemeData(
-            style: TextButton.styleFrom(foregroundColor: Colors.green),
+            style: TextButton.styleFrom(foregroundColor: Colors.green.shade800),
           ),
         ),
-        // The AuthWrapper will decide which screen to show based on login state.
+
+        // ================= DARK THEME =================
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green,
+            brightness: Brightness.dark,
+            primary: Colors.green.shade400,
+            background: const Color(0xFF121212),
+            onBackground: Colors.white70, // Text color on background
+          ),
+          scaffoldBackgroundColor: const Color(0xFF121212),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.green.shade800,
+            foregroundColor: Colors.white,
+          ),
+          textButtonTheme: TextButtonThemeData(
+            style: TextButton.styleFrom(foregroundColor: Colors.green.shade400),
+          ),
+        ),
+
+        // Yeh device ki setting ke hisab se theme select karega
+        themeMode: ThemeMode.system,
+
         home: const AuthWrapper(),
       ),
     );
