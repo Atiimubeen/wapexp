@@ -6,21 +6,24 @@ import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/features/auth/presentation/widgets/dashboard_card.dart';
 import 'package:wapexp/features/courses/presentation/pages/manage_courses_page.dart';
+import 'package:wapexp/features/sessions/presentation/pages/manage_sessions_page.dart'; // <-- Naya import
 
 class AdminHomePage extends StatelessWidget {
   final UserEntity user;
   const AdminHomePage({super.key, required this.user});
 
-  // Helper function to handle navigation
   void _navigateToPage(BuildContext context, String title) {
     Widget page;
     switch (title) {
       case 'Manage Courses':
         page = const ManageCoursesPage();
         break;
-      // **NAYA CASE ADD HUA HAI**
       case 'Manage Achievements':
         page = const ManageAchievementsPage();
+        break;
+      // **NAYA CASE ADD HUA HAI**
+      case 'Manage Sessions':
+        page = const ManageSessionsPage();
         break;
       default:
         ScaffoldMessenger.of(

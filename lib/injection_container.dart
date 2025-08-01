@@ -33,6 +33,16 @@ import 'package:wapexp/features/achievements/domain/usecases/get_achievements_us
 import 'package:wapexp/features/achievements/domain/usecases/update_achievement_usecase.dart';
 import 'package:wapexp/features/achievements/presentation/bloc/achievement_bloc.dart';
 
+// Sessions Imports
+import 'package:wapexp/features/sessions/data/datasources/session_remote_data_source.dart';
+import 'package:wapexp/features/sessions/data/repositories/session_repository_impl.dart';
+import 'package:wapexp/features/sessions/domain/repositories/session_repository.dart';
+import 'package:wapexp/features/sessions/domain/usecases/add_session_usecase.dart';
+import 'package:wapexp/features/sessions/domain/usecases/delete_session_usecase.dart';
+import 'package:wapexp/features/sessions/domain/usecases/get_sessions_usecase.dart';
+import 'package:wapexp/features/sessions/domain/usecases/update_session_usecase.dart';
+import 'package:wapexp/features/sessions/presentation/bloc/session_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
@@ -61,6 +71,14 @@ Future<void> setupDependencies() async {
       updateAchievementUseCase: getIt(),
     ),
   );
+  getIt.registerFactory(
+    () => SessionBloc(
+      addSessionUseCase: getIt(),
+      getSessionsUseCase: getIt(),
+      deleteSessionUseCase: getIt(),
+      updateSessionUseCase: getIt(),
+    ),
+  );
 
   // ================= USE CASES =================
   // Auth
@@ -84,6 +102,11 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(
     () => UpdateAchievementUseCase(repository: getIt()),
   );
+  // Sessions
+  getIt.registerLazySingleton(() => AddSessionUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => GetSessionsUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => DeleteSessionUseCase(repository: getIt()));
+  getIt.registerLazySingleton(() => UpdateSessionUseCase(repository: getIt()));
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepository>(
@@ -94,6 +117,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<AchievementRepository>(
     () => AchievementRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<SessionRepository>(
+    () => SessionRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // ================= DATA SOURCES =================
@@ -109,6 +135,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<AchievementRemoteDataSource>(
     () => AchievementRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
+  );
+  getIt.registerLazySingleton<SessionRemoteDataSource>(
+    () => SessionRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
   );
 
   // ================= EXTERNAL =================
