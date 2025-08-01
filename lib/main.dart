@@ -1,10 +1,10 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:wapexp/features/auth/presentation/pages/auth_wrapper.dart';
+import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wapexp/admin_app/features/auth/presentation/pages/auth_wrapper.dart';
 
-import 'package:wapexp/injection_container.dart';
+import 'package:wapexp/admin_app/injection_container.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
