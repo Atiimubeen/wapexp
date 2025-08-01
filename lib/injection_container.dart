@@ -52,6 +52,16 @@ import 'package:wapexp/features/slider_images/domain/usecases/delete_slider_imag
 import 'package:wapexp/features/slider_images/domain/usecases/get_slider_images_usecase.dart';
 import 'package:wapexp/features/slider_images/presentation/bloc/slider_image_bloc.dart';
 
+// Announcements Imports
+import 'package:wapexp/features/announcements/data/datasources/announcement_remote_data_source.dart';
+import 'package:wapexp/features/announcements/data/repositories/announcement_repository_impl.dart';
+import 'package:wapexp/features/announcements/domain/repositories/announcement_repository.dart';
+import 'package:wapexp/features/announcements/domain/usecases/add_announcement_usecase.dart';
+import 'package:wapexp/features/announcements/domain/usecases/delete_announcement_usecase.dart';
+import 'package:wapexp/features/announcements/domain/usecases/get_announcements_usecase.dart';
+import 'package:wapexp/features/announcements/domain/usecases/update_announcement_usecase.dart';
+import 'package:wapexp/features/announcements/presentation/bloc/announcement_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
@@ -95,6 +105,14 @@ Future<void> setupDependencies() async {
       deleteUseCase: getIt(),
     ),
   );
+  getIt.registerFactory(
+    () => AnnouncementBloc(
+      addUseCase: getIt(),
+      getUseCase: getIt(),
+      deleteUseCase: getIt(),
+      updateUseCase: getIt(),
+    ),
+  );
 
   // ================= USE CASES =================
   // Auth
@@ -131,6 +149,19 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(
     () => DeleteSliderImageUseCase(repository: getIt()),
   );
+  // Announcements
+  getIt.registerLazySingleton(
+    () => AddAnnouncementUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => GetAnnouncementsUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => DeleteAnnouncementUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => UpdateAnnouncementUseCase(repository: getIt()),
+  );
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepository>(
@@ -147,6 +178,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<SliderImageRepository>(
     () => SliderImageRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<AnnouncementRepository>(
+    () => AnnouncementRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // ================= DATA SOURCES =================
@@ -168,6 +202,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<SliderImageRemoteDataSource>(
     () => SliderImageRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
+  );
+  getIt.registerLazySingleton<AnnouncementRemoteDataSource>(
+    () => AnnouncementRemoteDataSourceImpl(firestore: getIt()),
   );
 
   // ================= EXTERNAL =================

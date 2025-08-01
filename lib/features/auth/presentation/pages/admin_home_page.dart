@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/features/achievements/presentation/pages/manage_achievements_page.dart';
+import 'package:wapexp/features/announcements/presentation/pages/manage_announcements_page.dart'; // <-- Naya import
 import 'package:wapexp/features/auth/domain/entities/user_entity.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/features/auth/presentation/widgets/dashboard_card.dart';
 import 'package:wapexp/features/courses/presentation/pages/manage_courses_page.dart';
 import 'package:wapexp/features/sessions/presentation/pages/manage_sessions_page.dart';
-import 'package:wapexp/features/slider_images/presentation/pages/manage_slider_images_page.dart'; // <-- Naya import
+import 'package:wapexp/features/slider_images/presentation/pages/manage_slider_images_page.dart';
 
 class AdminHomePage extends StatelessWidget {
   final UserEntity user;
@@ -25,9 +26,12 @@ class AdminHomePage extends StatelessWidget {
       case 'Manage Sessions':
         page = const ManageSessionsPage();
         break;
-      // **NAYA CASE ADD HUA HAI**
       case 'Slider Images':
         page = const ManageSliderImagesPage();
+        break;
+      // **NAYA CASE ADD HUA HAI**
+      case 'Announcements':
+        page = const ManageAnnouncementsPage();
         break;
       default:
         ScaffoldMessenger.of(
