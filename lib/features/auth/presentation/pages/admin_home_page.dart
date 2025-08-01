@@ -6,7 +6,8 @@ import 'package:wapexp/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/features/auth/presentation/widgets/dashboard_card.dart';
 import 'package:wapexp/features/courses/presentation/pages/manage_courses_page.dart';
-import 'package:wapexp/features/sessions/presentation/pages/manage_sessions_page.dart'; // <-- Naya import
+import 'package:wapexp/features/sessions/presentation/pages/manage_sessions_page.dart';
+import 'package:wapexp/features/slider_images/presentation/pages/manage_slider_images_page.dart'; // <-- Naya import
 
 class AdminHomePage extends StatelessWidget {
   final UserEntity user;
@@ -21,9 +22,12 @@ class AdminHomePage extends StatelessWidget {
       case 'Manage Achievements':
         page = const ManageAchievementsPage();
         break;
-      // **NAYA CASE ADD HUA HAI**
       case 'Manage Sessions':
         page = const ManageSessionsPage();
+        break;
+      // **NAYA CASE ADD HUA HAI**
+      case 'Slider Images':
+        page = const ManageSliderImagesPage();
         break;
       default:
         ScaffoldMessenger.of(

@@ -43,6 +43,15 @@ import 'package:wapexp/features/sessions/domain/usecases/get_sessions_usecase.da
 import 'package:wapexp/features/sessions/domain/usecases/update_session_usecase.dart';
 import 'package:wapexp/features/sessions/presentation/bloc/session_bloc.dart';
 
+// Slider Images Imports
+import 'package:wapexp/features/slider_images/data/datasources/slider_image_remote_data_source.dart';
+import 'package:wapexp/features/slider_images/data/repositories/slider_image_repository_impl.dart';
+import 'package:wapexp/features/slider_images/domain/repositories/slider_image_repository.dart';
+import 'package:wapexp/features/slider_images/domain/usecases/add_slider_image_usecase.dart';
+import 'package:wapexp/features/slider_images/domain/usecases/delete_slider_image_usecase.dart';
+import 'package:wapexp/features/slider_images/domain/usecases/get_slider_images_usecase.dart';
+import 'package:wapexp/features/slider_images/presentation/bloc/slider_image_bloc.dart';
+
 final getIt = GetIt.instance;
 
 Future<void> setupDependencies() async {
@@ -79,6 +88,13 @@ Future<void> setupDependencies() async {
       updateSessionUseCase: getIt(),
     ),
   );
+  getIt.registerFactory(
+    () => SliderImageBloc(
+      addUseCase: getIt(),
+      getUseCase: getIt(),
+      deleteUseCase: getIt(),
+    ),
+  );
 
   // ================= USE CASES =================
   // Auth
@@ -107,6 +123,14 @@ Future<void> setupDependencies() async {
   getIt.registerLazySingleton(() => GetSessionsUseCase(repository: getIt()));
   getIt.registerLazySingleton(() => DeleteSessionUseCase(repository: getIt()));
   getIt.registerLazySingleton(() => UpdateSessionUseCase(repository: getIt()));
+  // Slider Images
+  getIt.registerLazySingleton(() => AddSliderImageUseCase(repository: getIt()));
+  getIt.registerLazySingleton(
+    () => GetSliderImagesUseCase(repository: getIt()),
+  );
+  getIt.registerLazySingleton(
+    () => DeleteSliderImageUseCase(repository: getIt()),
+  );
 
   // ================= REPOSITORIES =================
   getIt.registerLazySingleton<AuthRepository>(
@@ -120,6 +144,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<SessionRepository>(
     () => SessionRepositoryImpl(remoteDataSource: getIt()),
+  );
+  getIt.registerLazySingleton<SliderImageRepository>(
+    () => SliderImageRepositoryImpl(remoteDataSource: getIt()),
   );
 
   // ================= DATA SOURCES =================
@@ -138,6 +165,9 @@ Future<void> setupDependencies() async {
   );
   getIt.registerLazySingleton<SessionRemoteDataSource>(
     () => SessionRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
+  );
+  getIt.registerLazySingleton<SliderImageRemoteDataSource>(
+    () => SliderImageRemoteDataSourceImpl(firestore: getIt(), storage: getIt()),
   );
 
   // ================= EXTERNAL =================
