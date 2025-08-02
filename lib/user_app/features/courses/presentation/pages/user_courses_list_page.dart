@@ -30,34 +30,37 @@ class UserCoursesListPage extends StatelessWidget {
                   child: Text('No courses available at the moment.'),
                 );
               }
-              return GridView.builder(
-                padding: const EdgeInsets.all(16),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.7,
-                ),
-                itemCount: state.courses.length,
-                itemBuilder: (context, index) {
-                  final course = state.courses[index];
-                  return UserCourseCard(
-                    course: course,
-                    onTap: () {
-                      // **NAYI LOGIC**
-                      // 1. View count barhane ke liye event bhejo
-                      context.read<UserCoursesBloc>().add(
-                        CourseCardTapped(courseId: course.id),
-                      );
-                      // 2. Detail page par navigate karo
-                      Navigator.of(context).push(
-                        MaterialPageRoute(
-                          builder: (_) => CourseDetailPage(course: course),
-                        ),
-                      );
-                    },
-                  );
+              // **THE FIX IS HERE: RefreshIndicator**
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<UserCoursesBloc>().add(LoadUserCourses());
                 },
+                child: GridView.builder(
+                  padding: const EdgeInsets.all(16),
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 16,
+                    mainAxisSpacing: 16,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: state.courses.length,
+                  itemBuilder: (context, index) {
+                    final course = state.courses[index];
+                    return UserCourseCard(
+                      course: course,
+                      onTap: () {
+                        context.read<UserCoursesBloc>().add(
+                          CourseCardTapped(courseId: course.id),
+                        );
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (_) => CourseDetailPage(course: course),
+                          ),
+                        );
+                      },
+                    );
+                  },
+                ),
               );
             }
             return const SizedBox.shrink();

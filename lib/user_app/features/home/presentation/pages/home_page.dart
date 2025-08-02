@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:wapexp/user_app/features/achievements/presentation/pages/user_achievements_list_page.dart';
 import 'package:wapexp/user_app/features/courses/presentation/pages/user_courses_list_page.dart';
 import 'package:wapexp/user_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:wapexp/user_app/features/home/presentation/bloc/home_event.dart';
@@ -154,7 +155,12 @@ class HomePage extends StatelessWidget {
           Icons.emoji_events_outlined,
           Colors.orange,
           () {
-            // TODO: Navigate to Achievements Page
+            // <-- Naya onTap function
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => const UserAchievementsListPage(),
+              ),
+            );
           },
         ),
         _buildCategoryCard(

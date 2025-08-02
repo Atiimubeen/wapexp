@@ -10,11 +10,18 @@ class UserCourseCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+    final textTheme = Theme.of(context).textTheme;
+
+    // **ASAL LOGIC YAHAN HAI**
+    // Check karo ke discount valid hai ya nahi
+    final bool hasValidDiscount =
+        course.discountedPrice != null &&
+        course.discountedPrice!.isNotEmpty &&
+        course.offerEndDate != null &&
+        course.offerEndDate!.isAfter(DateTime.now());
 
     return Card(
-      clipBehavior:
-          Clip.antiAlias, // Image ko card ke shape mein clip karne ke liye
+      clipBehavior: Clip.antiAlias,
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
       child: InkWell(
@@ -23,10 +30,10 @@ class UserCourseCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
+              alignment: Alignment.bottomRight,
               children: [
                 Hero(
-                  tag:
-                      'course_image_${course.id}', // Hero animation ke liye tag
+                  tag: 'course_image_${course.id}',
                   child: Image.network(
                     course.imageUrl,
                     height: 120,
@@ -44,25 +51,32 @@ class UserCourseCard extends StatelessWidget {
                   ),
                 ),
                 // Price ke liye ek khubsurat sa tag
-                Positioned(
-                  top: 8,
-                  right: 8,
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 8,
-                      vertical: 4,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.primary,
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Text(
-                      'Rs. ${course.price}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 12,
+                Container(
+                  margin: const EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 6,
+                  ),
+                  decoration: BoxDecoration(
+                    color: colors.primary,
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.2),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
                       ),
+                    ],
+                  ),
+                  child: Text(
+                    // Agar discount hai to discounted price dikhao, warna original
+                    hasValidDiscount
+                        ? 'Rs. ${course.discountedPrice}'
+                        : 'Rs. ${course.price}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 14,
                     ),
                   ),
                 ),
@@ -75,9 +89,8 @@ class UserCourseCard extends StatelessWidget {
                 children: [
                   Text(
                     course.name,
-                    style: const TextStyle(
+                    style: textTheme.titleMedium?.copyWith(
                       fontWeight: FontWeight.bold,
-                      fontSize: 16,
                     ),
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
@@ -93,11 +106,20 @@ class UserCourseCard extends StatelessWidget {
                       const SizedBox(width: 4),
                       Text(
                         course.duration,
-                        style: TextStyle(
+                        style: textTheme.bodySmall?.copyWith(
                           color: colors.onSurface.withOpacity(0.6),
-                          fontSize: 12,
                         ),
                       ),
+                      const Spacer(),
+                      // Agar discount hai, to purani price line-through ke saath dikhao
+                      if (hasValidDiscount)
+                        Text(
+                          'Rs. ${course.price}',
+                          style: textTheme.bodySmall?.copyWith(
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.red.shade300,
+                          ),
+                        ),
                     ],
                   ),
                 ],
