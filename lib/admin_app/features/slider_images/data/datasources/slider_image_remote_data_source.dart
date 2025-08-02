@@ -48,7 +48,10 @@ class SliderImageRemoteDataSourceImpl implements SliderImageRemoteDataSource {
 
   @override
   Future<void> deleteSliderImage(SliderImageEntity image) async {
+    // **THE FIX IS HERE:** Ab yeh Storage se bhi file delete karega.
+    // 1. Firestore se document delete karna
     await _firestore.collection('sliderImages').doc(image.id).delete();
+    // 2. Storage se image file delete karna
     await _storage.refFromURL(image.imageUrl).delete();
   }
 }

@@ -22,15 +22,94 @@ class WapexpApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
-      // **THE FIX IS HERE:** Jaise hi BLoC bane, usko AppStarted event bhejo
       create: (context) => getIt<AuthBloc>()..add(AppStarted()),
       child: MaterialApp(
         title: 'Wapexp',
         debugShowCheckedModeBanner: false,
-        theme: ThemeData(/* ... Light Theme ... */),
-        darkTheme: ThemeData(/* ... Dark Theme ... */),
-        themeMode: ThemeMode.dark,
-        // App hamesha AuthWrapper se shuru hogi, jo ke gatekeeper hai.
+
+        // ================= LIGHT THEME (COMPLETE) =================
+        theme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.light,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green,
+            primary: Colors.green.shade700,
+            background: const Color(0xFFF5F5F5),
+            surface: Colors.white,
+            onSurface: Colors.black87,
+          ),
+          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.green.shade700,
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white,
+            hintStyle: TextStyle(color: Colors.grey.shade500),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade300),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade700,
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+
+        // ================= DARK THEME (COMPLETE) =================
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: Colors.green,
+            brightness: Brightness.dark,
+            primary: Colors.green.shade400,
+            background: const Color(0xFF121212),
+            surface: const Color(0xFF1E1E1E),
+            onSurface: Colors.white70,
+          ),
+          scaffoldBackgroundColor: const Color(0xFF121212),
+          appBarTheme: AppBarTheme(
+            backgroundColor: Colors.grey.shade900,
+            foregroundColor: Colors.white,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.grey.shade800,
+            hintStyle: TextStyle(color: Colors.grey.shade500),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade700),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide(color: Colors.grey.shade700),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green.shade400,
+              foregroundColor: Colors.black,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
+        ),
+
+        themeMode: ThemeMode.system, // Default dark mode
         home: const AuthWrapper(),
       ),
     );

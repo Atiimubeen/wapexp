@@ -5,7 +5,7 @@ import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart
 import 'package:wapexp/admin_app/features/auth/presentation/pages/admin_home_page.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/pages/login_page.dart';
 import 'package:wapexp/splash_page.dart';
-import 'package:wapexp/user_app/features/home/presentation/pages/home_page.dart';
+import 'package:wapexp/user_app/presentation/pages/home_page.dart';
 
 class AuthWrapper extends StatelessWidget {
   const AuthWrapper({super.key});
