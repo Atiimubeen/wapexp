@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/sessions/presentation/bloc/session_eve
 import 'package:wapexp/admin_app/features/sessions/presentation/bloc/session_state.dart';
 import 'package:wapexp/admin_app/features/sessions/presentation/pages/add_edit_session_page.dart';
 import 'package:wapexp/admin_app/features/sessions/presentation/widgets/session_list_tile.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 class ManageSessionsPage extends StatelessWidget {
   const ManageSessionsPage({super.key});

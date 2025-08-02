@@ -65,7 +65,7 @@ class AdminHomePage extends StatelessWidget {
             tooltip: 'Log Out',
             icon: const Icon(Icons.logout),
             onPressed: () {
-              context.read<AuthBloc>().add(const LogOutButtonPressed());
+              context.read<AuthBloc>().add(LogOutButtonPressed());
             },
           ),
         ],

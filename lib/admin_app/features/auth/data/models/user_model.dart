@@ -7,6 +7,7 @@ class UserModel extends UserEntity {
     required super.name,
     required super.email,
     super.imageUrl,
+    required super.isAdmin,
   });
 
   // **THE FIX IS HERE**
@@ -16,7 +17,12 @@ class UserModel extends UserEntity {
     if (doc.data() == null) {
       // Agar data nahi hai, to ek khaali (empty) user bana do taake app crash na ho.
       // Yeh soorat-e-haal sirf signup ke waqt 1 second ke liye ho sakti hai.
-      return const UserModel(uid: '', name: 'No Name', email: 'No Email');
+      return UserModel(
+        uid: '',
+        name: 'No Name',
+        email: 'No Email',
+        isAdmin: false,
+      );
     }
 
     // Agar data hai, to usko 'map' mein badlo.
@@ -28,6 +34,7 @@ class UserModel extends UserEntity {
       name: data['name'] ?? '',
       email: data['email'] ?? '',
       imageUrl: data['imageUrl'],
+      isAdmin: data['isAdmin'] ?? false,
     );
   }
 }

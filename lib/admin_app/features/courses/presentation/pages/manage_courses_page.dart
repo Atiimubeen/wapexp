@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/courses/presentation/bloc/course_event
 import 'package:wapexp/admin_app/features/courses/presentation/bloc/course_state.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/pages/add_edit_course_page.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/widgets/course_list_tile.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 class ManageCoursesPage extends StatelessWidget {
   const ManageCoursesPage({super.key});

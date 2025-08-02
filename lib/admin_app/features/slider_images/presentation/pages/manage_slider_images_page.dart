@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/slider_images/domain/entities/slider_i
 import 'package:wapexp/admin_app/features/slider_images/presentation/bloc/slider_image_bloc.dart';
 import 'package:wapexp/admin_app/features/slider_images/presentation/bloc/slider_image_event.dart';
 import 'package:wapexp/admin_app/features/slider_images/presentation/bloc/slider_image_state.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 // **FIX 1: Converted to StatefulWidget**
 class ManageSliderImagesPage extends StatefulWidget {

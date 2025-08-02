@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/analytics/presentation/bloc/analytics_
 import 'package:wapexp/admin_app/features/analytics/presentation/widgets/info_card.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/widgets/course_list_tile.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/widgets/section_header.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 class AnalyticsPage extends StatelessWidget {
   const AnalyticsPage({super.key});

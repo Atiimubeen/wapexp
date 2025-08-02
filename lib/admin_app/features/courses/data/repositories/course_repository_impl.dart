@@ -14,6 +14,19 @@ class CourseRepositoryImpl implements CourseRepository {
     required this.remoteDataSource,
     required this.networkInfo,
   });
+  Future<Either<Failure, void>> incrementViewCount(String courseId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        await remoteDataSource.incrementViewCount(courseId);
+        return const Right(null);
+      } catch (e) {
+        return Left(ServerFailure(message: 'Failed to update view count.'));
+      }
+    } else {
+      // View count update na ho to user ko error dikhane ki zaroorat nahi
+      return const Right(null);
+    }
+  }
 
   @override
   Future<Either<Failure, void>> addCourse({

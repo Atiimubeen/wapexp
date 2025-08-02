@@ -15,6 +15,7 @@ abstract class CourseRepository {
     DateTime? endDate,
     DateTime? offerEndDate,
   });
+  Future<Either<Failure, void>> incrementViewCount(String courseId);
 
   // **NAYA FUNCTION**
   // Yeh function Firebase se courses ki real-time stream haasil karega.

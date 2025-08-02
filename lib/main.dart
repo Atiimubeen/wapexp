@@ -1,95 +1,36 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/pages/auth_wrapper.dart';
 
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/user_app/user_injection_container.dart' as user_di;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  await setupDependencies();
-  runApp(const MyApp());
+  await setupAdminDependencies();
+  await user_di.setupUserDependencies();
+  runApp(const WapexpApp());
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class WapexpApp extends StatelessWidget {
+  const WapexpApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider<AuthBloc>(
-      create: (context) => getIt<AuthBloc>(),
+      // **THE FIX IS HERE:** Jaise hi BLoC bane, usko AppStarted event bhejo
+      create: (context) => getIt<AuthBloc>()..add(AppStarted()),
       child: MaterialApp(
-        title: 'Wapexp Admin',
+        title: 'Wapexp',
         debugShowCheckedModeBanner: false,
-
-        // ================= LIGHT THEME (IMPROVED) =================
-        theme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.light,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green,
-            primary: Colors.green.shade700,
-            background: const Color(
-              0xFFF5F5F5,
-            ), // Thora sa off-white background
-            onBackground: Colors.black87,
-            surface: Colors.white, // Cards ka color
-            onSurface: Colors.black87, // Cards par text ka color
-          ),
-          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-          // Text fields ke liye default theme
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.white,
-            hintStyle: TextStyle(
-              color: Colors.grey.shade500,
-            ), // Hint text ka color
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
-            ),
-          ),
-        ),
-
-        // ================= DARK THEME (IMPROVED) =================
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green,
-            brightness: Brightness.dark,
-            primary: Colors.green.shade400,
-            background: const Color(0xFF121212),
-            onBackground: Colors.white70,
-            surface: const Color(0xFF1E1E1E), // Cards ka color
-            onSurface: Colors.white70, // Cards par text ka color
-          ),
-          scaffoldBackgroundColor: const Color(0xFF121212),
-          // Text fields ke liye default theme (dark)
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.grey.shade800,
-            hintStyle: TextStyle(
-              color: Colors.grey.shade500,
-            ), // Hint text ka color
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade700),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade700),
-            ),
-          ),
-        ),
-
+        theme: ThemeData(/* ... Light Theme ... */),
+        darkTheme: ThemeData(/* ... Dark Theme ... */),
         themeMode: ThemeMode.dark,
+        // App hamesha AuthWrapper se shuru hogi, jo ke gatekeeper hai.
         home: const AuthWrapper(),
       ),
     );

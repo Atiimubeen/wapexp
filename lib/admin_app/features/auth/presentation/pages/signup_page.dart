@@ -4,9 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
-import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart'; // <-- State import karein
-import 'package:wapexp/admin_app/features/auth/presentation/pages/admin_home_page.dart'; // <-- Home Page import karein
-import 'package:wapexp/admin_app/features/auth/presentation/pages/login_page.dart';
+import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_button.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_text_field.dart';
 
@@ -22,15 +20,12 @@ class _SignUpPageState extends State<SignUpPage> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   File? _image;
+  final ImagePicker _picker = ImagePicker();
 
   Future<void> _pickImage() async {
-    final pickedFile = await ImagePicker().pickImage(
-      source: ImageSource.gallery,
-    );
+    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
     if (pickedFile != null) {
-      setState(() {
-        _image = File(pickedFile.path);
-      });
+      setState(() => _image = File(pickedFile.path));
     }
   }
 
@@ -45,6 +40,7 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(elevation: 0, backgroundColor: Colors.transparent),
       body: SafeArea(
         child: Center(
           child: SingleChildScrollView(
@@ -54,7 +50,7 @@ class _SignUpPageState extends State<SignUpPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Create Admin Account',
+                  'Create Account',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40),
@@ -95,16 +91,7 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 30),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    // <-- YEH HAI ASAL FIX
-                    if (state is Authenticated) {
-                      // Jaise hi user authenticate ho, Admin Home Page par jao aur purani sab screens hata do.
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (_) => AdminHomePage(user: state.user),
-                        ),
-                        (route) => false,
-                      );
-                    } else if (state is AuthFailure) {
+                    if (state is AuthFailure) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
@@ -112,6 +99,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         ),
                       );
                     }
+                    // Yahan bhi navigation ki zaroorat nahi
                   },
                   builder: (context, state) {
                     return CustomButton(
@@ -129,21 +117,6 @@ class _SignUpPageState extends State<SignUpPage> {
                       },
                     );
                   },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Already have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pushReplacement(
-                          MaterialPageRoute(builder: (_) => const LoginPage()),
-                        );
-                      },
-                      child: const Text('Log In'),
-                    ),
-                  ],
                 ),
               ],
             ),

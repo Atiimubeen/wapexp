@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
-import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart'; // <-- State import karein
-import 'package:wapexp/admin_app/features/auth/presentation/pages/admin_home_page.dart'; // <-- Home Page import karein
+import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_button.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_text_field.dart';
@@ -38,7 +37,7 @@ class _LoginPageState extends State<LoginPage> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  'Welcome Back, \nAdmin!',
+                  'Welcome Back!',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 40),
@@ -57,15 +56,7 @@ class _LoginPageState extends State<LoginPage> {
                 const SizedBox(height: 30),
                 BlocConsumer<AuthBloc, AuthState>(
                   listener: (context, state) {
-                    // <-- YAHAN BHI WOHI FIX
-                    if (state is Authenticated) {
-                      Navigator.of(context).pushAndRemoveUntil(
-                        MaterialPageRoute(
-                          builder: (_) => AdminHomePage(user: state.user),
-                        ),
-                        (route) => false,
-                      );
-                    } else if (state is AuthFailure) {
+                    if (state is AuthFailure) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         SnackBar(
                           content: Text(state.message),
@@ -73,6 +64,7 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       );
                     }
+                    // Yahan navigation ki zaroorat nahi, AuthWrapper khud handle karega
                   },
                   builder: (context, state) {
                     return CustomButton(
@@ -96,7 +88,7 @@ class _LoginPageState extends State<LoginPage> {
                     const Text("Don't have an account?"),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(context).pushReplacement(
+                        Navigator.of(context).push(
                           MaterialPageRoute(builder: (_) => const SignUpPage()),
                         );
                       },

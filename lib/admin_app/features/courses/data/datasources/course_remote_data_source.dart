@@ -16,6 +16,7 @@ abstract class CourseRemoteDataSource {
     DateTime? endDate,
     DateTime? offerEndDate,
   });
+  Future<void> incrementViewCount(String courseId);
   Stream<List<CourseModel>> getCourses();
   Future<void> updateCourse(CourseEntity course);
   Future<void> deleteCourse(String courseId, String imageUrl);
@@ -30,6 +31,12 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
     required FirebaseStorage storage,
   }) : _firestore = firestore,
        _storage = storage;
+
+  @override
+  Future<void> incrementViewCount(String courseId) async {
+    final docRef = _firestore.collection('courses').doc(courseId);
+    await docRef.update({'viewCount': FieldValue.increment(1)});
+  }
 
   @override
   Future<void> addCourse({

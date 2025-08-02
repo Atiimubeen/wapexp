@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:io';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/get_user_stream_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/login_usecase.dart';
@@ -13,7 +12,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogInUseCase _logInUseCase;
   final LogOutUseCase _logOutUseCase;
   final GetUserStreamUseCase _getUserStreamUseCase;
-  late StreamSubscription _userSubscription;
 
   AuthBloc({
     required SignUpUseCase signUpUseCase,
@@ -25,25 +23,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _logOutUseCase = logOutUseCase,
        _getUserStreamUseCase = getUserStreamUseCase,
        super(AuthInitial()) {
-    // User ke authentication status ko musalsal sunna
-    _userSubscription = _getUserStreamUseCase().listen((user) {
-      add(AuthStateChanged(user: user));
-    });
+    // Shuruaati state
 
-    on<AuthStateChanged>((event, emit) {
-      if (event.user != null) {
-        emit(Authenticated(user: event.user));
-      } else {
-        emit(Unauthenticated());
-      }
-    });
-
-    on<SignUpButtonPressed>(_onSignUpButtonPressed);
-    on<LogInButtonPressed>(_onLogInButtonPressed);
-    on<LogOutButtonPressed>(_onLogOutButtonPressed);
+    on<AppStarted>(_onAppStarted);
+    on<SignUpButtonPressed>(_onSignUp);
+    on<LogInButtonPressed>(_onLogIn);
+    on<LogOutButtonPressed>(_onLogOut);
   }
 
-  Future<void> _onSignUpButtonPressed(
+  Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
+    // Jaise hi app shuru ho, user ke status ko sunna shuru kar do
+    await emit.forEach(
+      _getUserStreamUseCase(),
+      onData: (user) {
+        if (user != null) {
+          return Authenticated(user: user);
+        } else {
+          return Unauthenticated();
+        }
+      },
+      onError: (_, __) => Unauthenticated(),
+    );
+  }
+
+  Future<void> _onSignUp(
     SignUpButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
@@ -55,12 +58,18 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       image: event.image,
     );
     result.fold(
-      (failure) => emit(AuthFailure(message: failure.message)),
-      (_) => null, // Success is handled by the AuthStateChanged stream
+      (failure) {
+        // Error aane par, wapas Unauthenticated state mein jao taake UI theek ho jaye
+        emit(AuthFailure(message: failure.message));
+        emit(Unauthenticated());
+      },
+      (
+        _,
+      ) {}, // Kamyab hone par kuch nahi karna, stream khud state update karegi
     );
   }
 
-  Future<void> _onLogInButtonPressed(
+  Future<void> _onLogIn(
     LogInButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
@@ -70,21 +79,21 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       password: event.password,
     );
     result.fold(
-      (failure) => emit(AuthFailure(message: failure.message)),
-      (_) => null, // Success is handled by the AuthStateChanged stream
+      (failure) {
+        emit(AuthFailure(message: failure.message));
+        emit(Unauthenticated());
+      },
+      (
+        _,
+      ) {}, // Kamyab hone par kuch nahi karna, stream khud state update karegi
     );
   }
 
-  Future<void> _onLogOutButtonPressed(
+  Future<void> _onLogOut(
     LogOutButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
     await _logOutUseCase();
-  }
-
-  @override
-  Future<void> close() {
-    _userSubscription.cancel();
-    return super.close();
+    // Logout ke baad Unauthenticated state bhejne ki zaroorat nahi, stream khud handle karegi
   }
 }

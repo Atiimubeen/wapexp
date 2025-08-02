@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/achievements/presentation/bloc/achieve
 import 'package:wapexp/admin_app/features/achievements/presentation/bloc/achievement_state.dart';
 import 'package:wapexp/admin_app/features/achievements/presentation/pages/add_edit_achievement_page.dart';
 import 'package:wapexp/admin_app/features/achievements/presentation/widgets/achievement_list_tile.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 class ManageAchievementsPage extends StatelessWidget {
   const ManageAchievementsPage({super.key});

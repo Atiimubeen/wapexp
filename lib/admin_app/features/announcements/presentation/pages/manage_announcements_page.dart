@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/announcements/presentation/bloc/announ
 import 'package:wapexp/admin_app/features/announcements/presentation/bloc/announcement_state.dart';
 import 'package:wapexp/admin_app/features/announcements/presentation/pages/add_edit_announcement_page.dart';
 import 'package:wapexp/admin_app/features/announcements/presentation/widgets/announcement_list_tile.dart';
-import 'package:wapexp/admin_app/injection_container.dart';
+import 'package:wapexp/admin_app/admin_injection_container.dart';
 
 class ManageAnnouncementsPage extends StatelessWidget {
   const ManageAnnouncementsPage({super.key});

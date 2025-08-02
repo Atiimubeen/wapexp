@@ -55,6 +55,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       'email': email,
       'imageUrl': imageUrl,
       'createdAt': FieldValue.serverTimestamp(),
+      'isAdmin': false,
     });
   }
 

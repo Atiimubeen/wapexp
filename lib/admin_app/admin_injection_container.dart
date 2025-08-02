@@ -5,6 +5,8 @@ import 'package:get_it/get_it.dart';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:wapexp/core/network/network_info.dart';
 
+// **THE FIX IS HERE: All paths now include 'admin_app'**
+import 'package:wapexp/admin_app/features/courses/domain/usecases/increment_view_count_usecase.dart';
 // Auth Imports
 import 'package:wapexp/admin_app/features/auth/data/datasources/auth_remote_data_source.dart';
 import 'package:wapexp/admin_app/features/auth/data/repositories/auth_repository_impl.dart';
@@ -73,16 +75,25 @@ import 'package:wapexp/admin_app/features/analytics/presentation/bloc/analytics_
 
 final getIt = GetIt.instance;
 
-Future<void> setupDependencies() async {
+Future<void> setupAdminDependencies() async {
   // ================= EXTERNAL & CORE =================
-  getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
-  getIt.registerLazySingleton<FirebaseFirestore>(
-    () => FirebaseFirestore.instance,
+  if (!getIt.isRegistered<FirebaseAuth>())
+    getIt.registerLazySingleton<FirebaseAuth>(() => FirebaseAuth.instance);
+  if (!getIt.isRegistered<FirebaseFirestore>())
+    getIt.registerLazySingleton<FirebaseFirestore>(
+      () => FirebaseFirestore.instance,
+    );
+  if (!getIt.isRegistered<FirebaseStorage>())
+    getIt.registerLazySingleton<FirebaseStorage>(
+      () => FirebaseStorage.instance,
+    );
+  if (!getIt.isRegistered<NetworkInfo>())
+    getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
+  if (!getIt.isRegistered<Connectivity>())
+    getIt.registerLazySingleton(() => Connectivity());
+  getIt.registerLazySingleton(
+    () => IncrementViewCountUseCase(repository: getIt()),
   );
-  getIt.registerLazySingleton<FirebaseStorage>(() => FirebaseStorage.instance);
-  getIt.registerLazySingleton<NetworkInfo>(() => NetworkInfoImpl(getIt()));
-  getIt.registerLazySingleton(() => Connectivity());
-
   // ================= DATA SOURCES =================
   getIt.registerLazySingleton<AuthRemoteDataSource>(
     () => AuthRemoteDataSourceImpl(

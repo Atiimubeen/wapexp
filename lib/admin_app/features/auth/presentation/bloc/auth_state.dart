@@ -7,10 +7,10 @@ abstract class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
-// Initial state, jab app shuru hoti hai
+// Shuruaati state, jab app shuru hoti hai
 class AuthInitial extends AuthState {}
 
-// Loading state, jab koi process ho raha ho (e.g., login)
+// Loading state, jab koi process ho raha ho
 class AuthLoading extends AuthState {}
 
 // Authenticated state, jab user successfully login ho jaye
