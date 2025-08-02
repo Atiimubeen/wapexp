@@ -4,11 +4,13 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
+import 'package:wapexp/user_app/features/about_us/presentation/pages/about_us_page.dart';
 import 'package:wapexp/user_app/features/achievements/presentation/pages/user_achievements_list_page.dart';
 import 'package:wapexp/user_app/features/courses/presentation/pages/user_courses_list_page.dart';
 import 'package:wapexp/user_app/features/home/presentation/bloc/home_bloc.dart';
 import 'package:wapexp/user_app/features/home/presentation/bloc/home_event.dart';
 import 'package:wapexp/user_app/features/home/presentation/bloc/home_state.dart';
+import 'package:wapexp/user_app/features/sessions/presentation/pages/user_sessions_list_page.dart';
 import 'package:wapexp/user_app/user_injection_container.dart';
 
 class HomePage extends StatelessWidget {
@@ -168,11 +170,17 @@ class HomePage extends StatelessWidget {
           Icons.slideshow_outlined,
           Colors.purple,
           () {
-            // TODO: Navigate to Sessions Page
+            // <-- Naya onTap function
+            Navigator.of(context).push(
+              MaterialPageRoute(builder: (_) => const UserSessionsListPage()),
+            );
           },
         ),
         _buildCategoryCard('About Us', Icons.info_outline, Colors.teal, () {
-          // TODO: Navigate to About Us Page
+          // <-- Naya onTap function
+          Navigator.of(
+            context,
+          ).push(MaterialPageRoute(builder: (_) => const AboutUsPage()));
         }),
       ],
     );
