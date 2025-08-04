@@ -27,89 +27,57 @@ class WapexpApp extends StatelessWidget {
         title: 'Wapexp',
         debugShowCheckedModeBanner: false,
 
-        // ================= LIGHT THEME (COMPLETE) =================
+        // **NAYI PROFESSIONAL THEME**
         theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
+          fontFamily: 'Poppins', // Google Fonts se yeh font add karna hoga
+          scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green,
-            primary: Colors.green.shade700,
-            background: const Color(0xFFF5F5F5),
-            surface: Colors.white,
+            seedColor: const Color(0xFF007BFF), // Professional Blue
+            primary: const Color(0xFF007BFF),
+            background: Colors.white,
+            surface: const Color(0xFFF0F2F5), // Text field ka background
             onSurface: Colors.black87,
           ),
-          scaffoldBackgroundColor: const Color(0xFFF5F5F5),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.green.shade700,
-            foregroundColor: Colors.white,
+
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.black,
             elevation: 0,
           ),
+
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
-            fillColor: Colors.white,
+            fillColor: const Color(0xFFF0F2F5),
             hintStyle: TextStyle(color: Colors.grey.shade500),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide.none,
             ),
             enabledBorder: OutlineInputBorder(
               borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade300),
+              borderSide: BorderSide.none,
             ),
           ),
+
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade700,
+              minimumSize: const Size(double.infinity, 50),
+              backgroundColor: const Color(0xFF007BFF),
               foregroundColor: Colors.white,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(12),
               ),
-            ),
-          ),
-        ),
-
-        // ================= DARK THEME (COMPLETE) =================
-        darkTheme: ThemeData(
-          useMaterial3: true,
-          brightness: Brightness.dark,
-          colorScheme: ColorScheme.fromSeed(
-            seedColor: Colors.green,
-            brightness: Brightness.dark,
-            primary: Colors.green.shade400,
-            background: const Color(0xFF121212),
-            surface: const Color(0xFF1E1E1E),
-            onSurface: Colors.white70,
-          ),
-          scaffoldBackgroundColor: const Color(0xFF121212),
-          appBarTheme: AppBarTheme(
-            backgroundColor: Colors.grey.shade900,
-            foregroundColor: Colors.white,
-          ),
-          inputDecorationTheme: InputDecorationTheme(
-            filled: true,
-            fillColor: Colors.grey.shade800,
-            hintStyle: TextStyle(color: Colors.grey.shade500),
-            border: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade700),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderRadius: BorderRadius.circular(12),
-              borderSide: BorderSide(color: Colors.grey.shade700),
-            ),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green.shade400,
-              foregroundColor: Colors.black,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
               ),
             ),
           ),
         ),
 
-        themeMode: ThemeMode.system, // Default dark mode
         home: const AuthWrapper(),
       ),
     );

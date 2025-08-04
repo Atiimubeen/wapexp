@@ -7,13 +7,10 @@ abstract class AuthState extends Equatable {
   List<Object?> get props => [];
 }
 
-// Shuruaati state, jab app shuru hoti hai
 class AuthInitial extends AuthState {}
 
-// Loading state, jab koi process ho raha ho
 class AuthLoading extends AuthState {}
 
-// Authenticated state, jab user successfully login ho jaye
 class Authenticated extends AuthState {
   final UserEntity user;
   const Authenticated({required this.user});
@@ -21,13 +18,10 @@ class Authenticated extends AuthState {
   List<Object?> get props => [user];
 }
 
-// Unauthenticated state, jab user login na ho
-class Unauthenticated extends AuthState {}
-
-// Failure state, jab koi error aaye
-class AuthFailure extends AuthState {
-  final String message;
-  const AuthFailure({required this.message});
+class Unauthenticated extends AuthState {
+  // **THE FIX IS HERE:** Ab error message iske andar aayega
+  final String? message;
+  const Unauthenticated({this.message});
   @override
   List<Object?> get props => [message];
 }

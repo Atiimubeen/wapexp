@@ -35,3 +35,6 @@ class LogInButtonPressed extends AuthEvent {
 
 // Event jab user logout button par click karega
 class LogOutButtonPressed extends AuthEvent {}
+
+// Add to your AuthEvent.dart
+class ClearAuthMessage extends AuthEvent {}

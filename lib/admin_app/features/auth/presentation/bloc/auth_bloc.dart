@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
+//import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/get_user_stream_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/logout_usecase.dart';
@@ -23,26 +24,26 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
        _logOutUseCase = logOutUseCase,
        _getUserStreamUseCase = getUserStreamUseCase,
        super(AuthInitial()) {
-    // Shuruaati state
-
     on<AppStarted>(_onAppStarted);
     on<SignUpButtonPressed>(_onSignUp);
     on<LogInButtonPressed>(_onLogIn);
     on<LogOutButtonPressed>(_onLogOut);
+    on<ClearAuthMessage>(_onClearAuthMessage);
   }
 
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
-    // Jaise hi app shuru ho, user ke status ko sunna shuru kar do
     await emit.forEach(
       _getUserStreamUseCase(),
       onData: (user) {
-        if (user != null) {
-          return Authenticated(user: user);
-        } else {
-          return Unauthenticated();
-        }
+        print("User stream updated: ${user?.email}");
+        return user != null
+            ? Authenticated(user: user)
+            : const Unauthenticated();
       },
-      onError: (_, __) => Unauthenticated(),
+      onError: (error, _) {
+        print("User stream error: $error");
+        return const Unauthenticated();
+      },
     );
   }
 
@@ -57,16 +58,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       password: event.password,
       image: event.image,
     );
-    result.fold(
-      (failure) {
-        // Error aane par, wapas Unauthenticated state mein jao taake UI theek ho jaye
-        emit(AuthFailure(message: failure.message));
-        emit(Unauthenticated());
-      },
-      (
-        _,
-      ) {}, // Kamyab hone par kuch nahi karna, stream khud state update karegi
-    );
+
+    // **THE FIX IS HERE:** We only handle the failure case.
+    // On success, the stream listener in _onAppStarted will handle the state change.
+    if (result.isLeft()) {
+      final failure = result.swap().getOrElse(() => throw Exception());
+      emit(Unauthenticated(message: failure.message));
+    }
   }
 
   Future<void> _onLogIn(
@@ -78,22 +76,35 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       email: event.email,
       password: event.password,
     );
-    result.fold(
-      (failure) {
-        emit(AuthFailure(message: failure.message));
-        emit(Unauthenticated());
-      },
-      (
-        _,
-      ) {}, // Kamyab hone par kuch nahi karna, stream khud state update karegi
-    );
+
+    // **THE FIX IS HERE:** We only handle the failure case.
+    // On success, the stream listener in _onAppStarted will handle the state change.
+    if (result.isLeft()) {
+      final failure = result.swap().getOrElse(() => throw Exception());
+      emit(Unauthenticated(message: failure.message));
+    }
   }
+
+  // **REMOVE THIS:** This method is no longer needed.
+  // Future<void> _handleAuthSuccess(UserEntity user, Emitter<AuthState> emit) async {
+  //   await Future.delayed(const Duration(milliseconds: 500));
+  //   emit(Authenticated(user: user));
+  // }
 
   Future<void> _onLogOut(
     LogOutButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
+    emit(AuthLoading());
     await _logOutUseCase();
-    // Logout ke baad Unauthenticated state bhejne ki zaroorat nahi, stream khud handle karegi
+    // The stream listener will also catch this and emit Unauthenticated,
+    // but emitting it here directly can make the UI update faster.
+    emit(const Unauthenticated());
+  }
+
+  void _onClearAuthMessage(ClearAuthMessage event, Emitter<AuthState> emit) {
+    if (state is Unauthenticated) {
+      emit(const Unauthenticated());
+    }
   }
 }

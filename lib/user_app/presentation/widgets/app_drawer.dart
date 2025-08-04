@@ -6,6 +6,7 @@ import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:wapexp/user_app/features/about_us/presentation/pages/about_us_page.dart';
 import 'package:wapexp/user_app/features/achievements/presentation/pages/user_achievements_list_page.dart';
+import 'package:wapexp/user_app/features/blogs/presentation/pages/blogs_page.dart'; // <-- Naya import
 import 'package:wapexp/user_app/features/courses/presentation/pages/user_courses_list_page.dart';
 import 'package:wapexp/user_app/features/sessions/presentation/pages/user_sessions_list_page.dart';
 
@@ -88,6 +89,15 @@ class AppDrawer extends StatelessWidget {
               MaterialPageRoute(builder: (_) => const UserSessionsListPage()),
             ),
           ),
+          // **NAYA DRAWER ITEM**
+          _buildDrawerItem(
+            context,
+            icon: Icons.article_outlined,
+            title: 'Blogs',
+            onTap: () => Navigator.of(
+              context,
+            ).push(MaterialPageRoute(builder: (_) => const BlogsPage())),
+          ),
           _buildDrawerItem(
             context,
             icon: Icons.info_outline,
@@ -119,6 +129,13 @@ class AppDrawer extends StatelessWidget {
             title: 'Instagram',
             onTap: () =>
                 _launchURL('https://www.instagram.com/wapexpinstitute'),
+          ),
+          // **NAYA DRAWER ITEM**
+          _buildDrawerItem(
+            context,
+            icon: Icons.chat_bubble_outline,
+            title: 'WhatsApp',
+            onTap: () => _launchURL('https://wa.me/+923269909794'),
           ),
 
           const Divider(),

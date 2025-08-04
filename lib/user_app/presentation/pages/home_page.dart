@@ -6,7 +6,6 @@ import 'package:wapexp/user_app/features/about_us/presentation/pages/about_us_pa
 import 'package:wapexp/user_app/features/achievements/presentation/pages/user_achievements_list_page.dart';
 import 'package:wapexp/user_app/features/courses/presentation/pages/user_courses_list_page.dart';
 import 'package:wapexp/user_app/features/sessions/presentation/pages/user_sessions_list_page.dart';
-// **THE FIX IS HERE: Sahi import paths**
 import 'package:wapexp/user_app/presentation/bloc/home_bloc.dart';
 import 'package:wapexp/user_app/presentation/bloc/home_event.dart';
 import 'package:wapexp/user_app/presentation/bloc/home_state.dart';
@@ -126,7 +125,7 @@ class _HomePageState extends State<HomePage> {
       return Container(
         height: 200,
         decoration: BoxDecoration(
-          color: Colors.grey.shade300,
+          color: Theme.of(context).colorScheme.surface,
           borderRadius: BorderRadius.circular(16),
         ),
         child: const Center(child: Text('No promotional images available.')),
@@ -148,16 +147,13 @@ class _HomePageState extends State<HomePage> {
               margin: const EdgeInsets.symmetric(horizontal: 5.0),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                // **THE FIX IS HERE: Humne 'errorBuilder' add kar diya hai**
                 child: Image.network(
                   image.imageUrl,
                   fit: BoxFit.cover,
-                  // Jab tak image load ho rahi hai, loading indicator dikhao
                   loadingBuilder: (context, child, loadingProgress) {
                     if (loadingProgress == null) return child;
                     return const Center(child: CircularProgressIndicator());
                   },
-                  // Agar image load karne mein error aaye, to placeholder icon dikhao
                   errorBuilder: (context, error, stackTrace) {
                     return Container(
                       color: Colors.grey.shade200,

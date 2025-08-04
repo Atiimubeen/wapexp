@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/admin_app/features/achievements/presentation/pages/manage_achievements_page.dart';
-import 'package:wapexp/admin_app/features/analytics/presentation/pages/analytics_page.dart'; // <-- Naya import
+import 'package:wapexp/admin_app/features/analytics/presentation/pages/analytics_page.dart';
 import 'package:wapexp/admin_app/features/announcements/presentation/pages/manage_announcements_page.dart';
 import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
@@ -33,14 +33,10 @@ class AdminHomePage extends StatelessWidget {
       case 'Announcements':
         page = const ManageAnnouncementsPage();
         break;
-      // **NAYA CASE ADD HUA HAI**
       case 'User Analytics':
         page = const AnalyticsPage();
         break;
       default:
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('$title page coming soon!')));
         return;
     }
     Navigator.of(context).push(MaterialPageRoute(builder: (_) => page));
@@ -48,6 +44,7 @@ class AdminHomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     final List<Map<String, dynamic>> dashboardItems = [
       {'icon': Icons.school_outlined, 'title': 'Manage Courses'},
       {'icon': Icons.emoji_events_outlined, 'title': 'Manage Achievements'},
@@ -70,44 +67,50 @@ class AdminHomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Welcome, ${user.name}!',
-              style: const TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+      body: ListView(
+        padding: const EdgeInsets.all(24.0),
+        children: [
+          // **NAYA POLISHED HEADER**
+          Text(
+            'Welcome back,',
+            style: textTheme.titleLarge?.copyWith(color: Colors.grey),
+          ),
+          Text(
+            user.name,
+            style: textTheme.headlineMedium?.copyWith(
+              fontWeight: FontWeight.bold,
             ),
-            const SizedBox(height: 8),
-            const Text(
-              'Manage your application content from here.',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const SizedBox(height: 8),
+          const Text(
+            'Manage your application content from here.',
+            style: TextStyle(fontSize: 16, color: Colors.grey),
+          ),
+          const Divider(height: 48),
+
+          // Grid
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: dashboardItems.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 16,
+              mainAxisSpacing: 16,
+              childAspectRatio: 1.0, // Cards ko thora square banaya hai
             ),
-            const SizedBox(height: 24),
-            Expanded(
-              child: GridView.builder(
-                itemCount: dashboardItems.length,
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 1.1,
-                ),
-                itemBuilder: (context, index) {
-                  final item = dashboardItems[index];
-                  return DashboardCard(
-                    icon: item['icon'],
-                    title: item['title'],
-                    onTap: () {
-                      _navigateToPage(context, item['title']);
-                    },
-                  );
+            itemBuilder: (context, index) {
+              final item = dashboardItems[index];
+              return DashboardCard(
+                icon: item['icon'],
+                title: item['title'],
+                onTap: () {
+                  _navigateToPage(context, item['title']);
                 },
-              ),
-            ),
-          ],
-        ),
+              );
+            },
+          ),
+        ],
       ),
     );
   }

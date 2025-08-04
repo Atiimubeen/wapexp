@@ -3,100 +3,76 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_state.dart';
-import 'package:wapexp/admin_app/features/auth/presentation/pages/signup_page.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_button.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/widgets/custom_text_field.dart';
 
-class LoginPage extends StatefulWidget {
+class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
 
   @override
-  State<LoginPage> createState() => _LoginPageState();
-}
-
-class _LoginPageState extends State<LoginPage> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
-
-  @override
-  void dispose() {
-    _emailController.dispose();
-    _passwordController.dispose();
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
+    final emailController = TextEditingController();
+    final passwordController = TextEditingController();
+    final textTheme = Theme.of(context).textTheme;
+
     return Scaffold(
+      appBar: AppBar(),
       body: SafeArea(
-        child: Center(
-          child: SingleChildScrollView(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text(
-                  'Welcome Back!',
-                  style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
+        child: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is Unauthenticated && state.message != null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.message!),
+                  backgroundColor: Colors.red,
                 ),
-                const SizedBox(height: 40),
-                CustomTextField(
-                  controller: _emailController,
-                  hintText: 'Email',
-                  icon: Icons.email_outlined,
-                ),
-                const SizedBox(height: 20),
-                CustomTextField(
-                  controller: _passwordController,
-                  hintText: 'Password',
-                  icon: Icons.lock_outline,
-                  isPassword: true,
-                ),
-                const SizedBox(height: 30),
-                BlocConsumer<AuthBloc, AuthState>(
-                  listener: (context, state) {
-                    if (state is AuthFailure) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text(state.message),
-                          backgroundColor: Colors.red,
-                        ),
-                      );
-                    }
-                    // Yahan navigation ki zaroorat nahi, AuthWrapper khud handle karega
-                  },
-                  builder: (context, state) {
-                    return CustomButton(
-                      text: 'Log In',
-                      isLoading: state is AuthLoading,
-                      onPressed: () {
-                        context.read<AuthBloc>().add(
-                          LogInButtonPressed(
-                            email: _emailController.text.trim(),
-                            password: _passwordController.text,
-                          ),
-                        );
-                      },
-                    );
-                  },
-                ),
-                const SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Don't have an account?"),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).push(
-                          MaterialPageRoute(builder: (_) => const SignUpPage()),
-                        );
-                      },
-                      child: const Text('Sign Up'),
+              );
+            }
+          },
+          child: Center(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.all(32.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Welcome back',
+                    style: textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                  const SizedBox(height: 40),
+                  CustomTextField(
+                    controller: emailController,
+                    hintText: 'Username or Email',
+                    icon: Icons.person_outline,
+                  ),
+                  const SizedBox(height: 20),
+                  CustomTextField(
+                    controller: passwordController,
+                    hintText: 'Password',
+                    icon: Icons.lock_outline,
+                    isPassword: true,
+                  ),
+                  const SizedBox(height: 30),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      return CustomButton(
+                        text: 'Log In',
+                        isLoading: state is AuthLoading,
+                        onPressed: () {
+                          context.read<AuthBloc>().add(
+                            LogInButtonPressed(
+                              email: emailController.text.trim(),
+                              password: passwordController.text,
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
           ),
         ),
