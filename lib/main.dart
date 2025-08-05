@@ -27,26 +27,24 @@ class WapexpApp extends StatelessWidget {
         title: 'Wapexp',
         debugShowCheckedModeBanner: false,
 
-        // **NAYI PROFESSIONAL THEME**
+        // ================= LIGHT THEME (COMPLETE) =================
         theme: ThemeData(
           useMaterial3: true,
           brightness: Brightness.light,
-          fontFamily: 'Poppins', // Google Fonts se yeh font add karna hoga
+          fontFamily: 'Poppins',
           scaffoldBackgroundColor: Colors.white,
           colorScheme: ColorScheme.fromSeed(
-            seedColor: const Color(0xFF007BFF), // Professional Blue
+            seedColor: const Color(0xFF007BFF),
             primary: const Color(0xFF007BFF),
             background: Colors.white,
-            surface: const Color(0xFFF0F2F5), // Text field ka background
+            surface: const Color(0xFFF0F2F5),
             onSurface: Colors.black87,
           ),
-
           appBarTheme: const AppBarTheme(
             backgroundColor: Colors.white,
             foregroundColor: Colors.black,
             elevation: 0,
           ),
-
           inputDecorationTheme: InputDecorationTheme(
             filled: true,
             fillColor: const Color(0xFFF0F2F5),
@@ -60,7 +58,6 @@ class WapexpApp extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
           ),
-
           elevatedButtonTheme: ElevatedButtonThemeData(
             style: ElevatedButton.styleFrom(
               minimumSize: const Size(double.infinity, 50),
@@ -77,6 +74,54 @@ class WapexpApp extends StatelessWidget {
             ),
           ),
         ),
+
+        // ================= DARK THEME (COMPLETE) =================
+        darkTheme: ThemeData(
+          useMaterial3: true,
+          brightness: Brightness.dark,
+          fontFamily: 'Poppins',
+          scaffoldBackgroundColor: const Color(0xFF121212),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF007BFF),
+            brightness: Brightness.dark,
+            primary: const Color(0xFF409CFF),
+            background: const Color(0xFF121212),
+            surface: const Color(0xFF1E1E1E),
+            onSurface: Colors.white70,
+          ),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFF121212),
+            foregroundColor: Colors.white,
+            elevation: 0,
+          ),
+          inputDecorationTheme: InputDecorationTheme(
+            filled: true,
+            fillColor: Colors.white.withOpacity(0.1),
+            hintStyle: TextStyle(color: Colors.grey.shade500),
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(12),
+              borderSide: BorderSide.none,
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              minimumSize: const Size(double.infinity, 50),
+              backgroundColor: const Color(0xFF409CFF),
+              foregroundColor: Colors.white,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              textStyle: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Poppins',
+              ),
+            ),
+          ),
+        ),
+
+        // Ab yeh bilkul theek kaam karega
+        themeMode: ThemeMode.system,
 
         home: const AuthWrapper(),
       ),

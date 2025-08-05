@@ -14,7 +14,12 @@ abstract class AchievementRemoteDataSource {
   });
   Stream<List<AchievementModel>> getAchievements();
   Future<void> deleteAchievement(AchievementEntity achievement);
-  Future<void> updateAchievement(AchievementEntity achievement);
+
+  Future<void> updateAchievement({
+    required AchievementEntity achievement,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  });
 }
 
 class AchievementRemoteDataSourceImpl implements AchievementRemoteDataSource {
@@ -87,10 +92,46 @@ class AchievementRemoteDataSourceImpl implements AchievementRemoteDataSource {
   }
 
   @override
-  Future<void> updateAchievement(AchievementEntity achievement) async {
+  Future<void> updateAchievement({
+    required AchievementEntity achievement,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  }) async {
+    String coverImageUrl = achievement.coverImageUrl;
+    List<String> galleryImageUrls = achievement.galleryImageUrls;
+
+    // 1. Agar nayi cover image hai, to usay upload karo aur purani delete karo
+    if (newCoverImage != null) {
+      await _storage
+          .refFromURL(achievement.coverImageUrl)
+          .delete(); // Purani delete
+      coverImageUrl = await _uploadImage(
+        newCoverImage,
+        'achievement_images/${DateTime.now().millisecondsSinceEpoch}_cover.jpg',
+      ); // Nayi upload
+    }
+
+    // 2. Agar nayi gallery images hain, to unhein upload karo aur purani delete karo
+    if (newGalleryImages != null && newGalleryImages.isNotEmpty) {
+      for (final url in achievement.galleryImageUrls) {
+        await _storage.refFromURL(url).delete(); // Purani delete
+      }
+      galleryImageUrls = [];
+      for (int i = 0; i < newGalleryImages.length; i++) {
+        final imageUrl = await _uploadImage(
+          newGalleryImages[i],
+          'achievement_images/${achievement.id}_gallery_$i.jpg',
+        );
+        galleryImageUrls.add(imageUrl);
+      }
+    }
+
+    // 3. Firestore document ko nayi details ke saath update karo
     await _firestore.collection('achievements').doc(achievement.id).update({
       'name': achievement.name,
       'date': Timestamp.fromDate(achievement.date),
+      'coverImageUrl': coverImageUrl,
+      'galleryImageUrls': galleryImageUrls,
     });
   }
 }

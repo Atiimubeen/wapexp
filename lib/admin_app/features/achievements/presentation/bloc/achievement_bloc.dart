@@ -78,7 +78,11 @@ class AchievementBloc extends Bloc<AchievementEvent, AchievementState> {
     Emitter<AchievementState> emit,
   ) async {
     emit(AchievementLoading());
-    final result = await _updateAchievementUseCase(event.achievement);
+    final result = await _updateAchievementUseCase(
+      achievement: event.achievement,
+      newCoverImage: event.newCoverImage,
+      newGalleryImages: event.newGalleryImages,
+    );
     result.fold(
       (failure) => emit(AchievementFailure(message: failure.message)),
       (_) =>

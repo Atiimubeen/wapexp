@@ -23,7 +23,13 @@ class AddAchievementButtonPressed extends AchievementEvent {
 
 class UpdateAchievementButtonPressed extends AchievementEvent {
   final AchievementEntity achievement;
-  const UpdateAchievementButtonPressed({required this.achievement});
+  final File? newCoverImage;
+  final List<File>? newGalleryImages;
+  const UpdateAchievementButtonPressed({
+    required this.achievement,
+    this.newCoverImage,
+    this.newGalleryImages,
+  });
 }
 
 class DeleteAchievementButtonPressed extends AchievementEvent {

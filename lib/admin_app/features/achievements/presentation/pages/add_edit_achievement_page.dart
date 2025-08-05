@@ -60,23 +60,25 @@ class _AddEditAchievementPageState extends State<AddEditAchievementPage> {
 
   Future<void> _pickGalleryImages() async {
     final pickedFiles = await _picker.pickMultiImage(imageQuality: 80);
-    if (pickedFiles.isNotEmpty)
+    if (pickedFiles.isNotEmpty) {
       setState(
         () => _galleryImages = pickedFiles
             .map((file) => File(file.path))
             .toList(),
       );
+    }
   }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
+      initialDate: isEditMode ? widget.achievement!.date : DateTime.now(),
       firstDate: DateTime(2020),
       lastDate: DateTime(2035),
     );
-    if (picked != null)
+    if (picked != null) {
       _dateController.text = DateFormat('yyyy-MM-dd').format(picked);
+    }
   }
 
   void _saveAchievement() {
@@ -86,11 +88,17 @@ class _AddEditAchievementPageState extends State<AddEditAchievementPage> {
           id: widget.achievement!.id,
           name: _nameController.text.trim(),
           date: DateTime.parse(_dateController.text.trim()),
-          coverImageUrl: _existingCoverUrl!,
-          galleryImageUrls: _existingGalleryUrls,
+          coverImageUrl: widget.achievement!.coverImageUrl, // Purani URL
+          galleryImageUrls: widget.achievement!.galleryImageUrls, // Purani URLs
         );
         context.read<AchievementBloc>().add(
-          UpdateAchievementButtonPressed(achievement: updated),
+          UpdateAchievementButtonPressed(
+            achievement: updated,
+            newCoverImage: _coverImage, // Nayi image file (optional)
+            newGalleryImages: _galleryImages.isNotEmpty
+                ? _galleryImages
+                : null, // Nayi image files (optional)
+          ),
         );
       } else {
         if (_coverImage == null || _galleryImages.isEmpty) {

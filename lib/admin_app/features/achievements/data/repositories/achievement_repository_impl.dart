@@ -72,13 +72,18 @@ class AchievementRepositoryImpl implements AchievementRepository {
     }
   }
 
-  @override
-  Future<Either<Failure, void>> updateAchievement(
-    AchievementEntity achievement,
-  ) async {
+  Future<Either<Failure, void>> updateAchievement({
+    required AchievementEntity achievement,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.updateAchievement(achievement);
+        await remoteDataSource.updateAchievement(
+          achievement: achievement,
+          newCoverImage: newCoverImage,
+          newGalleryImages: newGalleryImages,
+        );
         return const Right(null);
       } catch (e) {
         return Left(ServerFailure(message: 'Failed to update achievement.'));

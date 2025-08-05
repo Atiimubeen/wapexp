@@ -16,7 +16,10 @@ abstract class AchievementRepository {
     AchievementEntity achievement,
   );
   // Update ke liye abhi hum sirf text update kar rahe hain, image nahi.
-  Future<Either<Failure, void>> updateAchievement(
-    AchievementEntity achievement,
-  );
+
+  Future<Either<Failure, void>> updateAchievement({
+    required AchievementEntity achievement,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  });
 }

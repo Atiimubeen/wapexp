@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:dartz/dartz.dart';
 import 'package:wapexp/core/error/failure.dart';
 import 'package:wapexp/admin_app/features/achievements/domain/entities/achievement_entity.dart';
@@ -6,6 +7,16 @@ import 'package:wapexp/admin_app/features/achievements/domain/repositories/achie
 class UpdateAchievementUseCase {
   final AchievementRepository repository;
   UpdateAchievementUseCase({required this.repository});
-  Future<Either<Failure, void>> call(AchievementEntity achievement) =>
-      repository.updateAchievement(achievement);
+
+  Future<Either<Failure, void>> call({
+    required AchievementEntity achievement,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  }) {
+    return repository.updateAchievement(
+      achievement: achievement,
+      newCoverImage: newCoverImage,
+      newGalleryImages: newGalleryImages,
+    );
+  }
 }
