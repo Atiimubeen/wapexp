@@ -12,5 +12,9 @@ abstract class SessionRepository {
   });
   Stream<Either<Failure, List<SessionEntity>>> getSessions();
   Future<Either<Failure, void>> deleteSession(SessionEntity session);
-  Future<Either<Failure, void>> updateSession(SessionEntity session);
+  Future<Either<Failure, void>> updateSession({
+    required SessionEntity session,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  });
 }

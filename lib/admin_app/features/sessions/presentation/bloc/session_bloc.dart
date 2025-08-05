@@ -73,7 +73,11 @@ class SessionBloc extends Bloc<SessionEvent, SessionState> {
     Emitter<SessionState> emit,
   ) async {
     emit(SessionLoading());
-    final result = await _updateSessionUseCase(event.session);
+    final result = await _updateSessionUseCase(
+      session: event.session,
+      newCoverImage: event.newCoverImage,
+      newGalleryImages: event.newGalleryImages,
+    );
     result.fold(
       (failure) => emit(SessionFailure(message: failure.message)),
       (_) => emit(const SessionActionSuccess(message: 'Session Updated!')),

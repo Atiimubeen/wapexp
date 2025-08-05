@@ -71,10 +71,18 @@ class SessionRepositoryImpl implements SessionRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateSession(SessionEntity session) async {
+  Future<Either<Failure, void>> updateSession({
+    required SessionEntity session,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.updateSession(session);
+        await remoteDataSource.updateSession(
+          session: session,
+          newCoverImage: newCoverImage,
+          newGalleryImages: newGalleryImages,
+        );
         return const Right(null);
       } catch (e) {
         return Left(ServerFailure(message: 'Failed to update session.'));

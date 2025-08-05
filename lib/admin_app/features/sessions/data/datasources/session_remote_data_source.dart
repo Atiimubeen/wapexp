@@ -13,7 +13,11 @@ abstract class SessionRemoteDataSource {
   });
   Stream<List<SessionModel>> getSessions();
   Future<void> deleteSession(SessionEntity session);
-  Future<void> updateSession(SessionEntity session);
+  Future<void> updateSession({
+    required SessionEntity session,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  });
 }
 
 class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
@@ -83,10 +87,41 @@ class SessionRemoteDataSourceImpl implements SessionRemoteDataSource {
   }
 
   @override
-  Future<void> updateSession(SessionEntity session) async {
+  Future<void> updateSession({
+    required SessionEntity session,
+    File? newCoverImage,
+    List<File>? newGalleryImages,
+  }) async {
+    String coverImageUrl = session.coverImageUrl;
+    List<String> galleryImageUrls = session.galleryImageUrls;
+
+    if (newCoverImage != null) {
+      await _storage.refFromURL(session.coverImageUrl).delete();
+      coverImageUrl = await _uploadImage(
+        newCoverImage,
+        'session_images/${DateTime.now().millisecondsSinceEpoch}_cover.jpg',
+      );
+    }
+
+    if (newGalleryImages != null && newGalleryImages.isNotEmpty) {
+      for (final url in session.galleryImageUrls) {
+        await _storage.refFromURL(url).delete();
+      }
+      galleryImageUrls = [];
+      for (int i = 0; i < newGalleryImages.length; i++) {
+        final imageUrl = await _uploadImage(
+          newGalleryImages[i],
+          'session_images/${session.id}_gallery_$i.jpg',
+        );
+        galleryImageUrls.add(imageUrl);
+      }
+    }
+
     await _firestore.collection('sessions').doc(session.id).update({
       'name': session.name,
       'date': Timestamp.fromDate(session.date),
+      'coverImageUrl': coverImageUrl,
+      'galleryImageUrls': galleryImageUrls,
     });
   }
 }

@@ -4,7 +4,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:wapexp/admin_app/admin_injection_container.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:wapexp/admin_app/features/auth/presentation/bloc/auth_event.dart';
-import 'package:wapexp/admin_app/features/auth/presentation/pages/auth_wrapper.dart';
+
+import 'package:wapexp/splash_page.dart';
 
 import 'package:wapexp/user_app/user_injection_container.dart' as user_di;
 
@@ -123,7 +124,7 @@ class WapexpApp extends StatelessWidget {
         // Ab yeh bilkul theek kaam karega
         themeMode: ThemeMode.system,
 
-        home: const AuthWrapper(),
+        home: const SplashPage(),
       ),
     );
   }

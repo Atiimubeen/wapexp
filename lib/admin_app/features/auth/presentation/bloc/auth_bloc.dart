@@ -36,13 +36,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       _getUserStreamUseCase(),
       onData: (user) {
         print("User stream updated: ${user?.email}");
-        return user != null
-            ? Authenticated(user: user)
-            : const Unauthenticated();
+        return user != null ? Authenticated(user: user) : Unauthenticated();
       },
       onError: (error, _) {
         print("User stream error: $error");
-        return const Unauthenticated();
+        return Unauthenticated();
       },
     );
   }

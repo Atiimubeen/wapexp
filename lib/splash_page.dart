@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:wapexp/admin_app/features/auth/presentation/pages/auth_wrapper.dart';
+import 'dart:async';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -16,20 +18,18 @@ class _SplashPageState extends State<SplashPage>
   void initState() {
     super.initState();
     _controller = AnimationController(
-      // Animation ki duration thori kam kar di hai taake app tezi se khule
-      duration: const Duration(milliseconds: 1200),
+      duration: const Duration(milliseconds: 1500),
       vsync: this,
     );
+    _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
+    _controller.forward();
 
-    _fadeAnimation = Tween<double>(
-      begin: 0.0,
-      end: 1.0,
-    ).animate(CurvedAnimation(parent: _controller, curve: Curves.easeIn));
-
-    // Animation ko thori der baad shuru karna taake user ko ek smooth feel aaye
-    Future.delayed(const Duration(milliseconds: 300), () {
+    // **THE FIX IS HERE:** 3 second ke baad AuthWrapper par navigate karna
+    Timer(const Duration(seconds: 3), () {
       if (mounted) {
-        _controller.forward();
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(builder: (_) => const AuthWrapper()),
+        );
       }
     });
   }

@@ -23,7 +23,13 @@ class AddSessionButtonPressed extends SessionEvent {
 
 class UpdateSessionButtonPressed extends SessionEvent {
   final SessionEntity session;
-  const UpdateSessionButtonPressed({required this.session});
+  final File? newCoverImage;
+  final List<File>? newGalleryImages;
+  const UpdateSessionButtonPressed({
+    required this.session,
+    this.newCoverImage,
+    this.newGalleryImages,
+  });
 }
 
 class DeleteSessionButtonPressed extends SessionEvent {
