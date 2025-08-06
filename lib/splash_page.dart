@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:wapexp/admin_app/features/auth/presentation/pages/auth_wrapper.dart';
-import 'dart:async';
 
 class SplashPage extends StatefulWidget {
   const SplashPage({super.key});
@@ -23,15 +21,6 @@ class _SplashPageState extends State<SplashPage>
     );
     _fadeAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(_controller);
     _controller.forward();
-
-    // **THE FIX IS HERE:** 3 second ke baad AuthWrapper par navigate karna
-    Timer(const Duration(seconds: 3), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (_) => const AuthWrapper()),
-        );
-      }
-    });
   }
 
   @override
@@ -43,7 +32,6 @@ class _SplashPageState extends State<SplashPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // **THE FIX IS HERE:** Ab background app ki theme se aayega
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: Center(
         child: FadeTransition(
@@ -53,32 +41,39 @@ class _SplashPageState extends State<SplashPage>
             children: [
               // Logo
               Image.asset(
-                'assets/images/wapexplogo.png', // Aapke logo ka sahi path
+                'assets/images/wapexplogo.png',
                 width: 150,
                 errorBuilder: (context, error, stackTrace) {
-                  return const Icon(
+                  return Icon(
                     Icons.school,
                     size: 100,
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.primary,
                   );
                 },
               ),
               const SizedBox(height: 24),
 
               // Tagline
-              const Text(
+              Text(
                 'Wapexp Institute of IT',
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 8),
               Text(
                 'Empowering the Future',
-                style: TextStyle(
-                  fontSize: 16,
+                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                   color: Theme.of(
                     context,
                   ).textTheme.bodyLarge?.color?.withOpacity(0.7),
                 ),
+              ),
+              const SizedBox(height: 40),
+
+              // Loading indicator
+              CircularProgressIndicator(
+                color: Theme.of(context).colorScheme.primary,
               ),
             ],
           ),

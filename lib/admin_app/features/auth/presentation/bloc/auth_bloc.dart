@@ -1,10 +1,12 @@
+// lib/features/auth/presentation/bloc/auth_bloc.dart
+
 import 'dart:async';
 import 'package:flutter_bloc/flutter_bloc.dart';
-//import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/get_user_stream_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/signup_usecase.dart';
+import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -13,6 +15,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogInUseCase _logInUseCase;
   final LogOutUseCase _logOutUseCase;
   final GetUserStreamUseCase _getUserStreamUseCase;
+  StreamSubscription? _userSubscription;
 
   AuthBloc({
     required SignUpUseCase signUpUseCase,
@@ -29,39 +32,60 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<LogInButtonPressed>(_onLogIn);
     on<LogOutButtonPressed>(_onLogOut);
     on<ClearAuthMessage>(_onClearAuthMessage);
+    // Use the now public UserChanged event
+    on<UserChanged>(_onUserChanged);
   }
 
   Future<void> _onAppStarted(AppStarted event, Emitter<AuthState> emit) async {
-    await emit.forEach(
-      _getUserStreamUseCase(),
-      onData: (user) {
-        print("User stream updated: ${user?.email}");
-        return user != null ? Authenticated(user: user) : Unauthenticated();
-      },
-      onError: (error, _) {
-        print("User stream error: $error");
-        return Unauthenticated();
-      },
-    );
+    try {
+      await Future.delayed(const Duration(seconds: 2));
+      await _userSubscription?.cancel();
+      _userSubscription = _getUserStreamUseCase().listen(
+        // Add the public UserChanged event
+        (user) => add(UserChanged(user)),
+      );
+    } catch (error) {
+      print("App start error: $error");
+      emit(
+        const Unauthenticated(message: "Failed to initialize authentication"),
+      );
+    }
   }
 
+  // Use the public UserChanged event type in the handler signature
+  void _onUserChanged(UserChanged event, Emitter<AuthState> emit) {
+    if (event.user != null) {
+      emit(Authenticated(user: event.user!));
+    } else {
+      // This is the core logic fix:
+      // Only transition to a blank Unauthenticated state if we aren't already in one.
+      // This preserves any existing error messages.
+      if (state is! Unauthenticated) {
+        emit(const Unauthenticated());
+      }
+    }
+  }
+
+  // ... (The rest of your BLoC methods like _onSignUp, _onLogIn, etc., remain the same)
   Future<void> _onSignUp(
     SignUpButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
+    if (state is AuthLoading) return;
     emit(AuthLoading());
-    final result = await _signUpUseCase(
-      name: event.name,
-      email: event.email,
-      password: event.password,
-      image: event.image,
-    );
-
-    // **THE FIX IS HERE:** We only handle the failure case.
-    // On success, the stream listener in _onAppStarted will handle the state change.
-    if (result.isLeft()) {
-      final failure = result.swap().getOrElse(() => throw Exception());
-      emit(Unauthenticated(message: failure.message));
+    try {
+      final result = await _signUpUseCase(
+        name: event.name,
+        email: event.email,
+        password: event.password,
+        image: event.image,
+      );
+      result.fold(
+        (failure) => emit(Unauthenticated(message: failure.message)),
+        (_) {}, // On success, do nothing. The stream will handle it.
+      );
+    } catch (error) {
+      emit(Unauthenticated(message: "Signup failed: ${error.toString()}"));
     }
   }
 
@@ -69,40 +93,48 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogInButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
+    if (state is AuthLoading) return;
     emit(AuthLoading());
-    final result = await _logInUseCase(
-      email: event.email,
-      password: event.password,
-    );
-
-    // **THE FIX IS HERE:** We only handle the failure case.
-    // On success, the stream listener in _onAppStarted will handle the state change.
-    if (result.isLeft()) {
-      final failure = result.swap().getOrElse(() => throw Exception());
-      emit(Unauthenticated(message: failure.message));
+    try {
+      final result = await _logInUseCase(
+        email: event.email,
+        password: event.password,
+      );
+      result.fold(
+        (failure) => emit(Unauthenticated(message: failure.message)),
+        (_) {}, // On success, do nothing. The stream will handle it.
+      );
+    } catch (error) {
+      emit(Unauthenticated(message: "Login failed: ${error.toString()}"));
     }
   }
-
-  // **REMOVE THIS:** This method is no longer needed.
-  // Future<void> _handleAuthSuccess(UserEntity user, Emitter<AuthState> emit) async {
-  //   await Future.delayed(const Duration(milliseconds: 500));
-  //   emit(Authenticated(user: user));
-  // }
 
   Future<void> _onLogOut(
     LogOutButtonPressed event,
     Emitter<AuthState> emit,
   ) async {
-    emit(AuthLoading());
-    await _logOutUseCase();
-    // The stream listener will also catch this and emit Unauthenticated,
-    // but emitting it here directly can make the UI update faster.
-    emit(const Unauthenticated());
+    try {
+      emit(AuthLoading());
+      await _logOutUseCase();
+    } catch (error) {
+      print("Logout error: $error");
+      emit(
+        const Unauthenticated(
+          message: "Logout failed, but you've been signed out locally",
+        ),
+      );
+    }
   }
 
   void _onClearAuthMessage(ClearAuthMessage event, Emitter<AuthState> emit) {
     if (state is Unauthenticated) {
       emit(const Unauthenticated());
     }
+  }
+
+  @override
+  Future<void> close() {
+    _userSubscription?.cancel();
+    return super.close();
   }
 }

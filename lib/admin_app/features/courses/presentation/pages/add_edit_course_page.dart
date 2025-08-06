@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -10,9 +9,10 @@ import 'package:wapexp/admin_app/features/courses/presentation/bloc/course_bloc.
 import 'package:wapexp/admin_app/features/courses/presentation/bloc/course_event.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/bloc/course_state.dart';
 import 'package:wapexp/admin_app/features/courses/presentation/widgets/section_header.dart';
+import 'package:wapexp/core/utils/image_helper.dart';
 
 class AddEditCoursePage extends StatefulWidget {
-  final CourseEntity? course; // Yeh parameter "Edit" ke liye data laata hai
+  final CourseEntity? course;
   const AddEditCoursePage({super.key, this.course});
 
   @override
@@ -23,10 +23,9 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
   final _formKey = GlobalKey<FormState>();
   File? _image;
   String? _existingImageUrl;
+  bool _isProcessingImage = false;
 
-  // **THE FIX IS HERE:** Hum ImagePicker ki ek hi instance banayenge.
   final ImagePicker _picker = ImagePicker();
-
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _priceController = TextEditingController();
@@ -75,16 +74,96 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
   }
 
   Future<void> _pickImage() async {
-    // **THE FIX IS HERE:** Hum pehle se banayi hui instance ko istemal karenge.
-    final pickedFile = await _picker.pickImage(
-      source: ImageSource.gallery,
-      imageQuality: 80,
-    );
-    if (pickedFile != null) {
+    try {
+      final pickedFile = await _picker.pickImage(
+        source: ImageSource.gallery,
+        imageQuality: 100, // Pick at full quality, we'll process it ourselves
+      );
+
+      if (pickedFile == null) return;
+      if (!mounted) return;
+
       setState(() {
-        _image = File(pickedFile.path);
-        _existingImageUrl = null;
+        _isProcessingImage = true;
       });
+
+      // Show processing feedback
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Row(
+            children: [
+              SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+              SizedBox(width: 16),
+              Text('Processing image...'),
+            ],
+          ),
+          duration: Duration(minutes: 1), // Keep it open during processing
+        ),
+      );
+
+      // Process the image (fix rotation and compress)
+      final processedImage = await ImageHelper.processImage(
+        File(pickedFile.path),
+        fixRotation: true,
+        compress: true,
+        quality: 85,
+        maxWidth: 1920,
+        maxHeight: 1920,
+      );
+
+      // Validate the processed image
+      final isValid = await ImageHelper.isValidImageFile(processedImage);
+
+      if (!mounted) return;
+
+      // Hide processing indicator
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      if (isValid) {
+        setState(() {
+          _image = processedImage;
+          _existingImageUrl = null;
+          _isProcessingImage = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Image processed successfully!'),
+            backgroundColor: Colors.green,
+            duration: Duration(seconds: 2),
+          ),
+        );
+      } else {
+        setState(() {
+          _isProcessingImage = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Failed to process image. Please try another image.'),
+            backgroundColor: Colors.red,
+            duration: Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _isProcessingImage = false;
+        });
+
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error selecting image: ${e.toString()}'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -106,26 +185,34 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
   void _saveCourse() {
     if (_formKey.currentState!.validate()) {
       if (isEditMode) {
+        // Edit logic for courses with images
         final updatedCourse = CourseEntity(
           id: widget.course!.id,
           name: _nameController.text.trim(),
           description: _descriptionController.text.trim(),
           price: _priceController.text.trim(),
-          discountedPrice: _discountedPriceController.text.trim(),
+          discountedPrice: _discountedPriceController.text.trim().isEmpty
+              ? null
+              : _discountedPriceController.text.trim(),
           duration: _durationController.text.trim(),
-          imageUrl: _existingImageUrl ?? widget.course!.imageUrl,
           startDate: DateTime.parse(_startDateController.text.trim()),
-          endDate: _endDateController.text.trim().isNotEmpty
-              ? DateTime.parse(_endDateController.text.trim())
-              : null,
-          offerEndDate: _offerEndDateController.text.trim().isNotEmpty
-              ? DateTime.parse(_offerEndDateController.text.trim())
-              : null,
+          endDate: _endDateController.text.trim().isEmpty
+              ? null
+              : DateTime.parse(_endDateController.text.trim()),
+          offerEndDate: _offerEndDateController.text.trim().isEmpty
+              ? null
+              : DateTime.parse(_offerEndDateController.text.trim()),
+          imageUrl: widget.course!.imageUrl, // Keep existing URL
         );
+
         context.read<CourseBloc>().add(
-          UpdateCourseButtonPressed(course: updatedCourse),
+          UpdateCourseButtonPressed(
+            course: updatedCourse,
+            // This will be null if no new image was selected
+          ),
         );
       } else {
+        // Add new course
         if (_image == null) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
@@ -135,6 +222,7 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
           );
           return;
         }
+
         context.read<CourseBloc>().add(
           AddCourseButtonPressed(
             name: _nameController.text.trim(),
@@ -183,6 +271,80 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
     );
   }
 
+  Widget _buildImagePicker() {
+    return GestureDetector(
+      onTap: _isProcessingImage ? null : _pickImage,
+      child: Container(
+        height: 200,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          color: Theme.of(context).colorScheme.surface,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: _isProcessingImage
+                ? Colors.blue.shade300
+                : Colors.grey.shade400,
+            width: 1,
+          ),
+        ),
+        child: _isProcessingImage
+            ? const Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Processing image...'),
+                  ],
+                ),
+              )
+            : _image != null
+            ? ClipRRect(
+                borderRadius: BorderRadius.circular(11),
+                child: Image.file(
+                  _image!,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) => const Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(Icons.error, color: Colors.red, size: 50),
+                        Text('Error loading image'),
+                      ],
+                    ),
+                  ),
+                ),
+              )
+            : (_existingImageUrl != null
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(11),
+                      child: Image.network(
+                        _existingImageUrl!,
+                        fit: BoxFit.cover,
+                        errorBuilder: (context, error, stackTrace) =>
+                            const Center(
+                              child: Icon(Icons.error, color: Colors.red),
+                            ),
+                      ),
+                    )
+                  : Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.camera_alt_outlined,
+                            size: 50,
+                            color: Colors.grey.shade600,
+                          ),
+                          const SizedBox(height: 8),
+                          const Text('Tap to select an image'),
+                        ],
+                      ),
+                    )),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -217,45 +379,7 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
             ),
             children: [
               const SectionHeader(title: 'Course Image'),
-              GestureDetector(
-                onTap: _pickImage,
-                child: Container(
-                  height: 200,
-                  width: double.infinity,
-                  decoration: BoxDecoration(
-                    color: Theme.of(context).colorScheme.surface,
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: Colors.grey.shade400, width: 1),
-                  ),
-                  child: _image != null
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(11),
-                          child: Image.file(_image!, fit: BoxFit.cover),
-                        )
-                      : (_existingImageUrl != null
-                            ? ClipRRect(
-                                borderRadius: BorderRadius.circular(11),
-                                child: Image.network(
-                                  _existingImageUrl!,
-                                  fit: BoxFit.cover,
-                                ),
-                              )
-                            : Center(
-                                child: Column(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Icon(
-                                      Icons.camera_alt_outlined,
-                                      size: 50,
-                                      color: Colors.grey.shade600,
-                                    ),
-                                    const SizedBox(height: 8),
-                                    const Text('Tap to select an image'),
-                                  ],
-                                ),
-                              )),
-                ),
-              ),
+              _buildImagePicker(),
               const SectionHeader(title: 'Course Details'),
               TextFormField(
                 controller: _nameController,
@@ -333,8 +457,8 @@ class _AddEditCoursePageState extends State<AddEditCoursePage> {
                 builder: (context, state) {
                   return CustomButton(
                     text: isEditMode ? 'Update Course' : 'Save Course',
-                    isLoading: state is CourseLoading,
-                    onPressed: _saveCourse,
+                    isLoading: state is CourseLoading || _isProcessingImage,
+                    onPressed: (_isProcessingImage) ? null : _saveCourse,
                   );
                 },
               ),

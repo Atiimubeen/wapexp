@@ -1,6 +1,9 @@
+// home_page.dart (Final Code with Themed Header)
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:carousel_slider/carousel_slider.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:wapexp/user_app/features/about_us/presentation/pages/about_us_page.dart';
 import 'package:wapexp/user_app/features/achievements/presentation/pages/user_achievements_list_page.dart';
@@ -20,62 +23,65 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  bool _announcementShown = false;
+  static bool _announcementShown = false;
 
   void _showAnnouncementDialog(BuildContext context, HomeLoaded state) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (mounted && state.latestAnnouncement != null && !_announcementShown) {
-        setState(() {
-          _announcementShown = true;
-        });
-        showDialog(
-          context: context,
-          builder: (dialogContext) => AlertDialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(16),
-            ),
-            title: Row(
-              children: [
-                Icon(
-                  Icons.campaign,
-                  color: Theme.of(context).colorScheme.primary,
-                ),
-                const SizedBox(width: 8),
-                const Text('Announcement'),
-              ],
-            ),
-            content: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  state.latestAnnouncement!.title,
-                  style: const TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                  ),
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  DateFormat(
-                    'MMM d, yyyy',
-                  ).format(state.latestAnnouncement!.date),
-                  style: const TextStyle(fontSize: 12, color: Colors.grey),
-                ),
-                const Divider(height: 24),
-                Text(state.latestAnnouncement!.description),
-              ],
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(dialogContext).pop(),
-                child: const Text('Close'),
+    if (state.latestAnnouncement != null && !_announcementShown) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (mounted) {
+          setState(() {
+            _announcementShown = true;
+          });
+          showDialog(
+            context: context,
+            barrierDismissible: true,
+            builder: (dialogContext) => AlertDialog(
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(16),
               ),
-            ],
-          ),
-        );
-      }
-    });
+              title: Row(
+                children: [
+                  Icon(
+                    Icons.campaign,
+                    color: Theme.of(context).colorScheme.primary,
+                  ),
+                  const SizedBox(width: 8),
+                  const Text('Announcement'),
+                ],
+              ),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    state.latestAnnouncement!.title,
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 18,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    DateFormat(
+                      'MMM d, yyyy',
+                    ).format(state.latestAnnouncement!.date),
+                    style: const TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                  const Divider(height: 24),
+                  Text(state.latestAnnouncement!.description),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Close'),
+                ),
+              ],
+            ),
+          );
+        }
+      });
+    }
   }
 
   @override
@@ -96,7 +102,32 @@ class _HomePageState extends State<HomePage> {
               return const Center(child: CircularProgressIndicator());
             }
             if (state is HomeFailure) {
-              return Center(child: Text(state.message));
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                    const SizedBox(height: 16),
+                    Text(
+                      'Something went wrong',
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                    const SizedBox(height: 8),
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: Colors.grey),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () {
+                        context.read<HomeBloc>().add(LoadHomeData());
+                      },
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
             }
             if (state is HomeLoaded) {
               return RefreshIndicator(
@@ -106,8 +137,19 @@ class _HomePageState extends State<HomePage> {
                 child: ListView(
                   padding: const EdgeInsets.all(16.0),
                   children: [
+                    _buildHeader(context), // <-- context pass karein
+                    const SizedBox(height: 20),
                     _buildImageSlider(state),
                     const SizedBox(height: 24),
+                    Padding(
+                      padding: const EdgeInsets.only(left: 4, bottom: 16),
+                      child: Text(
+                        'Categories',
+                        style: Theme.of(context).textTheme.headlineSmall
+                            ?.copyWith(fontWeight: FontWeight.bold),
+                        textAlign: TextAlign.start,
+                      ),
+                    ),
                     _buildCategoriesGrid(context),
                   ],
                 ),
@@ -116,6 +158,53 @@ class _HomePageState extends State<HomePage> {
             return const SizedBox.shrink();
           },
         ),
+      ),
+    );
+  }
+
+  // **THE FIX IS HERE:** Ab yeh context se theme-aware colors istemal kar raha hai
+  Widget _buildHeader(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Today is a good day',
+                  style: GoogleFonts.lato(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: textTheme.bodyLarge?.color, // <-- Theme se color
+                  ),
+                ),
+                Text(
+                  'to learn something new!',
+                  style: GoogleFonts.lato(
+                    fontSize: 16,
+                    color: textTheme.bodyMedium?.color?.withOpacity(
+                      0.7,
+                    ), // <-- Theme se color
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(width: 16),
+          SizedBox(
+            height: 50,
+            width: 50,
+            child: Image.asset(
+              'assets/images/wapexplogo.png',
+              fit: BoxFit.contain,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -137,7 +226,9 @@ class _HomePageState extends State<HomePage> {
         autoPlay: true,
         enlargeCenterPage: true,
         aspectRatio: 16 / 9,
-        viewportFraction: 0.9,
+        viewportFraction: 0.8,
+        autoPlayInterval: const Duration(seconds: 4),
+        autoPlayAnimationDuration: const Duration(milliseconds: 800),
       ),
       items: state.sliderImages.map((image) {
         return Builder(
@@ -212,7 +303,7 @@ class _HomePageState extends State<HomePage> {
           Colors.teal,
           () => Navigator.of(
             context,
-          ).push(MaterialPageRoute(builder: (_) => const AboutUsPage())),
+          ).push(MaterialPageRoute(builder: (_) => AboutUsPage())),
         ),
       ],
     );
