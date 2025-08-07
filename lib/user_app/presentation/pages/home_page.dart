@@ -1,4 +1,4 @@
-// home_page.dart (Final Code with Themed Header)
+// Enhanced home_page.dart with Professional Background
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -89,83 +89,141 @@ class _HomePageState extends State<HomePage> {
     return BlocProvider(
       create: (context) => getIt<HomeBloc>()..add(LoadHomeData()),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Wapexp'), centerTitle: true),
+        appBar: AppBar(
+          title: const Text('Wapexp'),
+          centerTitle: true,
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+                colors: [
+                  Colors.white, // Green matching your logo
+                  Colors.white,
+                ],
+              ),
+            ),
+          ),
+        ),
         drawer: const AppDrawer(),
-        body: BlocConsumer<HomeBloc, HomeState>(
-          listener: (context, state) {
-            if (state is HomeLoaded) {
-              _showAnnouncementDialog(context, state);
-            }
-          },
-          builder: (context, state) {
-            if (state is HomeLoading || state is HomeInitial) {
-              return const Center(child: CircularProgressIndicator());
-            }
-            if (state is HomeFailure) {
-              return Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.error_outline, size: 64, color: Colors.grey),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Something went wrong',
-                      style: Theme.of(context).textTheme.headlineSmall,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      state.message,
-                      textAlign: TextAlign.center,
-                      style: const TextStyle(color: Colors.grey),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed: () {
-                        context.read<HomeBloc>().add(LoadHomeData());
-                      },
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              );
-            }
-            if (state is HomeLoaded) {
-              return RefreshIndicator(
-                onRefresh: () async {
-                  context.read<HomeBloc>().add(LoadHomeData());
-                },
-                child: ListView(
-                  padding: const EdgeInsets.all(16.0),
-                  children: [
-                    _buildHeader(context), // <-- context pass karein
-                    const SizedBox(height: 20),
-                    _buildImageSlider(state),
-                    const SizedBox(height: 24),
-                    Padding(
-                      padding: const EdgeInsets.only(left: 4, bottom: 16),
-                      child: Text(
-                        'Categories',
-                        style: Theme.of(context).textTheme.headlineSmall
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                        textAlign: TextAlign.start,
+        // MAIN BACKGROUND ENHANCEMENT HERE
+        body: Container(
+          decoration: _buildBackgroundDecoration(context),
+          child: BlocConsumer<HomeBloc, HomeState>(
+            listener: (context, state) {
+              if (state is HomeLoaded) {
+                _showAnnouncementDialog(context, state);
+              }
+            },
+            builder: (context, state) {
+              if (state is HomeLoading || state is HomeInitial) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (state is HomeFailure) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.error_outline, size: 64, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Something went wrong',
+                        style: Theme.of(context).textTheme.headlineSmall,
                       ),
-                    ),
-                    _buildCategoriesGrid(context),
-                  ],
-                ),
-              );
-            }
-            return const SizedBox.shrink();
-          },
+                      const SizedBox(height: 8),
+                      Text(
+                        state.message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: () {
+                          context.read<HomeBloc>().add(LoadHomeData());
+                        },
+                        child: const Text('Retry'),
+                      ),
+                    ],
+                  ),
+                );
+              }
+              if (state is HomeLoaded) {
+                return RefreshIndicator(
+                  onRefresh: () async {
+                    context.read<HomeBloc>().add(LoadHomeData());
+                  },
+                  child: ListView(
+                    padding: const EdgeInsets.all(16.0),
+                    children: [
+                      _buildHeader(context),
+                      const SizedBox(height: 20),
+                      _buildImageSlider(state),
+                      const SizedBox(height: 24),
+                      Padding(
+                        padding: const EdgeInsets.only(left: 4, bottom: 16),
+                        child: Text(
+                          'Categories',
+                          style: Theme.of(context).textTheme.headlineSmall
+                              ?.copyWith(
+                                fontWeight: FontWeight.bold,
+                                color: const Color(
+                                  0xFF2E7D32,
+                                ), // Dark green for contrast
+                              ),
+                          textAlign: TextAlign.start,
+                        ),
+                      ),
+                      _buildCategoriesGrid(context),
+                    ],
+                  ),
+                );
+              }
+              return const SizedBox.shrink();
+            },
+          ),
         ),
       ),
     );
   }
 
-  // **THE FIX IS HERE:** Ab yeh context se theme-aware colors istemal kar raha hai
+  // PROFESSIONAL BACKGROUND DECORATION
+  BoxDecoration _buildBackgroundDecoration(BuildContext context) {
+    final isDarkMode = Theme.of(context).brightness == Brightness.dark;
+
+    if (isDarkMode) {
+      return BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFF1E1E1E),
+            const Color(0xFF2D2D2D),
+            const Color(0xFF1A4D1A), // Subtle green tint
+          ],
+          stops: const [0.0, 0.7, 1.0],
+        ),
+      );
+    } else {
+      return BoxDecoration(
+        gradient: LinearGradient(
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+          colors: [
+            const Color(0xFFF8FDF8), // Very light green tint
+            const Color(0xFFF0F8F0), // Slightly more green
+            const Color(0xFFE8F5E8), // Light green at bottom
+          ],
+          stops: const [0.0, 0.5, 1.0],
+        ),
+      );
+    }
+  }
+
   Widget _buildHeader(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    return Padding(
+    return Container(
       padding: const EdgeInsets.symmetric(horizontal: 4.0, vertical: 8.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -180,25 +238,35 @@ class _HomePageState extends State<HomePage> {
                   style: GoogleFonts.lato(
                     fontSize: 22,
                     fontWeight: FontWeight.bold,
-                    color: textTheme.bodyLarge?.color, // <-- Theme se color
+                    color: const Color(0xFF2E7D32), // Green matching brand
                   ),
                 ),
                 Text(
                   'to learn something new!',
                   style: GoogleFonts.lato(
                     fontSize: 16,
-                    color: textTheme.bodyMedium?.color?.withOpacity(
-                      0.7,
-                    ), // <-- Theme se color
+                    color: textTheme.bodyMedium?.color?.withOpacity(0.7),
                   ),
                 ),
               ],
             ),
           ),
           const SizedBox(width: 16),
-          SizedBox(
-            height: 50,
-            width: 50,
+          Container(
+            height: 55,
+            width: 55,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: [
+                BoxShadow(
+                  color: const Color(0xFF4CAF50).withOpacity(0.3),
+                  blurRadius: 8,
+                  offset: const Offset(0, 4),
+                ),
+              ],
+              color: Colors.white,
+            ),
+            padding: const EdgeInsets.all(4),
             child: Image.asset(
               'assets/images/wapexplogo.png',
               fit: BoxFit.contain,
@@ -214,12 +282,30 @@ class _HomePageState extends State<HomePage> {
       return Container(
         height: 200,
         decoration: BoxDecoration(
-          color: Theme.of(context).colorScheme.surface,
+          gradient: LinearGradient(
+            colors: [
+              Colors.white.withOpacity(0.9),
+              Colors.white.withOpacity(0.7),
+            ],
+          ),
           borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 5),
+            ),
+          ],
         ),
-        child: const Center(child: Text('No promotional images available.')),
+        child: const Center(
+          child: Text(
+            'No promotional images available.',
+            style: TextStyle(color: Colors.grey),
+          ),
+        ),
       );
     }
+
     return CarouselSlider(
       options: CarouselOptions(
         height: 200.0,
@@ -236,6 +322,16 @@ class _HomePageState extends State<HomePage> {
             return Container(
               width: MediaQuery.of(context).size.width,
               margin: const EdgeInsets.symmetric(horizontal: 5.0),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(16),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.1),
+                    blurRadius: 10,
+                    offset: const Offset(0, 5),
+                  ),
+                ],
+              ),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
                 child: Image.network(
@@ -316,27 +412,44 @@ class _HomePageState extends State<HomePage> {
     VoidCallback onTap,
   ) {
     return Card(
-      elevation: 2,
+      elevation: 6, // Increased elevation for better depth
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      color: color.withOpacity(0.8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(icon, size: 48, color: Colors.white),
-            const SizedBox(height: 16),
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+      shadowColor: color.withOpacity(0.3),
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(16),
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [color.withOpacity(0.8), color.withOpacity(0.9)],
+          ),
+        ),
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: Colors.white.withOpacity(0.2),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Icon(icon, size: 48, color: Colors.white),
               ),
-            ),
-          ],
+              const SizedBox(height: 16),
+              Text(
+                title,
+                textAlign: TextAlign.center,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

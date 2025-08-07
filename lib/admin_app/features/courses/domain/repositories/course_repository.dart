@@ -20,6 +20,9 @@ abstract class CourseRepository {
   // **NAYA FUNCTION**
   // Yeh function Firebase se courses ki real-time stream haasil karega.
   Stream<Either<Failure, List<CourseEntity>>> getCourses();
-  Future<Either<Failure, void>> updateCourse(CourseEntity course);
+  Future<Either<Failure, void>> updateCourse({
+    required CourseEntity course,
+    File? newImage, // Nayi image (optional)
+  });
   Future<Either<Failure, void>> deleteCourse(String courseId, String imageUrl);
 }

@@ -8,7 +8,7 @@ class CourseDetailPage extends StatelessWidget {
   const CourseDetailPage({super.key, required this.course});
 
   void _launchWhatsApp(BuildContext context) async {
-    const phoneNumber = "923217658485";
+    const phoneNumber = "+923269909794";
     final message = "Hi, I'm interested in the '${course.name}' course.";
     final Uri whatsappUri = Uri.parse(
       "https://wa.me/$phoneNumber?text=${Uri.encodeComponent(message)}",

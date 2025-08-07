@@ -6,7 +6,7 @@ import 'package:wapexp/admin_app/features/auth/domain/usecases/get_user_stream_u
 import 'package:wapexp/admin_app/features/auth/domain/usecases/login_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/logout_usecase.dart';
 import 'package:wapexp/admin_app/features/auth/domain/usecases/signup_usecase.dart';
-import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
+//import 'package:wapexp/admin_app/features/auth/domain/entities/user_entity.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 

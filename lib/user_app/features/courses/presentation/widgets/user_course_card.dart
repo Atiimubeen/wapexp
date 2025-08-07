@@ -12,13 +12,23 @@ class UserCourseCard extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
 
-    // **ASAL LOGIC YAHAN HAI**
-    // Check karo ke discount valid hai ya nahi
+    // Check if discount is valid - simplified check
     final bool hasValidDiscount =
         course.discountedPrice != null &&
         course.discountedPrice!.isNotEmpty &&
-        course.offerEndDate != null &&
-        course.offerEndDate!.isAfter(DateTime.now());
+        course.discountedPrice != "0" &&
+        course.discountedPrice != course.price;
+
+    // Calculate discount percentage
+    double discountPercentage = 0;
+    if (hasValidDiscount) {
+      final originalPrice = double.tryParse(course.price) ?? 0.0;
+      final discountedPrice = double.tryParse(course.discountedPrice!) ?? 0.0;
+      if (originalPrice > 0) {
+        discountPercentage =
+            ((originalPrice - discountedPrice) / originalPrice) * 100;
+      }
+    }
 
     return Card(
       clipBehavior: Clip.antiAlias,
@@ -50,7 +60,7 @@ class UserCourseCard extends StatelessWidget {
                         ),
                   ),
                 ),
-                // Price ke liye ek khubsurat sa tag
+                // Price tag on image
                 Container(
                   margin: const EdgeInsets.all(8.0),
                   padding: const EdgeInsets.symmetric(
@@ -58,7 +68,9 @@ class UserCourseCard extends StatelessWidget {
                     vertical: 6,
                   ),
                   decoration: BoxDecoration(
-                    color: colors.primary,
+                    color: hasValidDiscount
+                        ? Colors.green.shade700
+                        : colors.primary,
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -69,7 +81,6 @@ class UserCourseCard extends StatelessWidget {
                     ],
                   ),
                   child: Text(
-                    // Agar discount hai to discounted price dikhao, warna original
                     hasValidDiscount
                         ? 'Rs. ${course.discountedPrice}'
                         : 'Rs. ${course.price}',
@@ -80,6 +91,30 @@ class UserCourseCard extends StatelessWidget {
                     ),
                   ),
                 ),
+                // Discount percentage badge
+                if (hasValidDiscount)
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.red,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${discountPercentage.toStringAsFixed(0)}% OFF',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             ),
             Padding(
@@ -95,7 +130,34 @@ class UserCourseCard extends StatelessWidget {
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 8),
+
+                  // Price section - more prominent for discounts
+                  if (hasValidDiscount) ...[
+                    Row(
+                      children: [
+                        Text(
+                          'Rs. ${course.price}',
+                          style: textTheme.titleSmall?.copyWith(
+                            decoration: TextDecoration.lineThrough,
+                            color: Colors.grey.shade500,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          'Rs. ${course.discountedPrice}',
+                          style: textTheme.titleMedium?.copyWith(
+                            color: Colors.green.shade700,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                  ],
+
+                  // Duration row
                   Row(
                     children: [
                       Icon(
@@ -111,13 +173,13 @@ class UserCourseCard extends StatelessWidget {
                         ),
                       ),
                       const Spacer(),
-                      // Agar discount hai, to purani price line-through ke saath dikhao
-                      if (hasValidDiscount)
+                      // Show regular price if no discount
+                      if (!hasValidDiscount)
                         Text(
                           'Rs. ${course.price}',
-                          style: textTheme.bodySmall?.copyWith(
-                            decoration: TextDecoration.lineThrough,
-                            color: Colors.red.shade300,
+                          style: textTheme.titleSmall?.copyWith(
+                            color: colors.primary,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                     ],

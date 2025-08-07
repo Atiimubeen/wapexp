@@ -167,6 +167,7 @@ Future<void> setupAdminDependencies() async {
   getIt.registerLazySingleton(() => AddCourseUseCase(repository: getIt()));
   getIt.registerLazySingleton(() => GetCoursesUseCase(repository: getIt()));
   getIt.registerLazySingleton(() => DeleteCourseUseCase(repository: getIt()));
+  // YEH LINE 100% THEEK HAI, ISAY TABDEEL NA KAREIN
   getIt.registerLazySingleton(() => UpdateCourseUseCase(repository: getIt()));
   // Achievements
   getIt.registerLazySingleton(() => AddAchievementUseCase(repository: getIt()));

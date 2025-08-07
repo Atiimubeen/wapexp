@@ -1,3 +1,4 @@
+//import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -15,6 +16,7 @@ import 'dart:async';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  // **THE FIX IS HERE:** Hum Firebase ko uski configuration file ke saath initialize kar rahe hain.
   await Firebase.initializeApp();
   await setupAdminDependencies();
   await user_di.setupUserDependencies();

@@ -95,10 +95,13 @@ class CourseRepositoryImpl implements CourseRepository {
   }
 
   @override
-  Future<Either<Failure, void>> updateCourse(CourseEntity course) async {
+  Future<Either<Failure, void>> updateCourse({
+    required CourseEntity course,
+    File? newImage,
+  }) async {
     if (await networkInfo.isConnected) {
       try {
-        await remoteDataSource.updateCourse(course);
+        await remoteDataSource.updateCourse(course: course, newImage: newImage);
         return const Right(null);
       } catch (e) {
         return Left(ServerFailure(message: 'Failed to update course.'));

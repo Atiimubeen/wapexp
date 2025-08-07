@@ -36,10 +36,10 @@ class AddCourseButtonPressed extends CourseEvent {
 // Event jab course update karna ho
 class UpdateCourseButtonPressed extends CourseEvent {
   final CourseEntity course;
-  // TODO: Add support for updating image
-  const UpdateCourseButtonPressed({required this.course});
+  final File? newImage; // Nayi image (optional)
+  const UpdateCourseButtonPressed({required this.course, this.newImage});
   @override
-  List<Object?> get props => [course];
+  List<Object?> get props => [course, newImage];
 }
 
 // Event jab course delete karna ho

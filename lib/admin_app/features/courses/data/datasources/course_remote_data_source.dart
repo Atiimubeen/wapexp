@@ -18,7 +18,7 @@ abstract class CourseRemoteDataSource {
   });
   Future<void> incrementViewCount(String courseId);
   Stream<List<CourseModel>> getCourses();
-  Future<void> updateCourse(CourseEntity course);
+  Future<void> updateCourse({required CourseEntity course, File? newImage});
   Future<void> deleteCourse(String courseId, String imageUrl);
 }
 
@@ -94,7 +94,25 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
   }
 
   @override
-  Future<void> updateCourse(CourseEntity course) async {
+  Future<void> updateCourse({
+    required CourseEntity course,
+    File? newImage,
+  }) async {
+    String imageUrl = course.imageUrl;
+
+    // 1. Agar nayi image hai, to usay upload karo aur purani delete karo
+    if (newImage != null) {
+      // Pehle purani image delete karo
+      await _storage.refFromURL(course.imageUrl).delete();
+      // Ab nayi image upload karke uska URL haasil karo
+      final ref = _storage.ref(
+        'course_images/${DateTime.now().millisecondsSinceEpoch}.jpg',
+      );
+      await ref.putFile(newImage);
+      imageUrl = await ref.getDownloadURL();
+    }
+
+    // 2. CourseModel banakar usay Firestore mein update karo
     final courseModel = CourseModel(
       id: course.id,
       name: course.name,
@@ -102,11 +120,10 @@ class CourseRemoteDataSourceImpl implements CourseRemoteDataSource {
       price: course.price,
       discountedPrice: course.discountedPrice,
       duration: course.duration,
-      imageUrl: course.imageUrl,
+      imageUrl: imageUrl, // Nayi ya purani URL
       startDate: course.startDate,
       endDate: course.endDate,
       offerEndDate: course.offerEndDate,
-      // **THE FIX IS HERE:** Humne yahan 'viewCount' ko add kar diya hai.
       viewCount: course.viewCount,
     );
 

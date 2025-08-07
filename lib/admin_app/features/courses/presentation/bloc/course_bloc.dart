@@ -89,7 +89,10 @@ class CourseBloc extends Bloc<CourseEvent, CourseState> {
     Emitter<CourseState> emit,
   ) async {
     emit(CourseLoading());
-    final result = await _updateCourseUseCase(event.course);
+    final result = await _updateCourseUseCase(
+      course: event.course,
+      newImage: event.newImage,
+    );
     result.fold(
       (failure) => emit(CourseFailure(message: failure.message)),
       (_) => emit(
